@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daybook — Pradeep Yarlagadda</title>
+<meta name="description" content="A native Android journal with offline voice transcription, optional on-device AI reflections, photos, goals, and encrypted backups.">
+<meta property="og:title" content="Daybook — A day, in your own words."><meta property="og:description" content="Building a personal Android journal around local speech, preserved originals, and user-approved AI suggestions."><meta property="og:type" content="article"><meta property="og:url" content="https://agentcap.github.io/projects/daybook.html">
+<link rel="icon" href="../images/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="../stylesheet.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="header wrap"><a class="brand" href="../" aria-label="Pradeep Yarlagadda home">py<span>↗</span></a><nav aria-label="Main navigation"><a href="../#work">← All work</a><a href="../#writing">Writing</a></nav><a class="header-link" href="https://github.com/agentcap/daybook">Source ↗</a></header>
+<main id="main" class="wrap article">
+<header class="article-header"><p class="eyebrow">PROJECT NOTES / ON-DEVICE AI</p><h1>A day, in your<br>own words.</h1><p class="intro">Daybook is a native Android journal for the small things that make up a day: a thought on a walk, a meal worth remembering, a little progress toward a goal. Voice, text, and photos come together in a journal that keeps the original material alongside any AI reflection.</p><div class="tags"><span>Kotlin / Compose</span><span>whisper.cpp</span><span>llama.cpp / Qwen</span><span>Room</span><span>OpenAI</span></div><a class="button" href="https://github.com/agentcap/daybook">Explore the source ↗</a></header>
+
+<figure class="phone-pair"><div><img src="../images/daybook-today.png" alt="Daybook Today screen with voice, text and photo capture and confirmed daily goal progress" width="1080" height="2400"><img src="../images/daybook-journal.png" alt="Daybook journal showing original notes and an illustrated sample meal" width="1080" height="2400"></div><figcaption>Running Android app with synthetic journal entries and an illustrated sample meal. Displayed reviews and suggestions are fixtures.</figcaption></figure>
+
+<h2>Capture now. Reflect later.</h2>
+<p>Starting a note should take very little effort. Daybook offers a compact home-screen Record widget, a recording view with local draft text, and large pause, bookmark, and save controls. Recording can continue with the screen locked; a notification offers a way to stop and save.</p>
+<p>Speech stays on the phone. After a one-time English model download, whisper.cpp transcribes recordings offline. Live text arrives in short batches, then a fuller transcription runs after saving. The WAV remains available for playback, with audio bookmarks and approximate transcript timestamps to return to a moment.</p>
+
+<figure><img class="phone" src="../images/daybook-recording.png" alt="Actual Daybook recording view paused with one audio bookmark, resume control and stop-and-save button" width="1080" height="2400" loading="lazy"><figcaption>The actual recording interface, paused during emulator capture. No speech was detected in this recording; this image does not demonstrate microphone transcription quality.</figcaption></figure>
+
+<h2>Choose where reflection happens.</h2>
+<p>Daily cleanup can run locally with Qwen2.5-1.5B through llama.cpp, or directly through OpenAI using the user’s own API key. Local reviews work with text and require a separate model download. Optional cloud reviews can also describe eligible journal photos. There is no automatic cloud fallback.</p>
+<p>The two providers share the same source checks and approval rules. Cleaned writing, summaries, and suggestions are stored separately from original notes. Each generated review links back to its supporting entries, and edits mark an earlier review as outdated.</p>
+<ul><li><strong>Privacy choices:</strong> keep individual entries on-device, exclude selected notes’ photos from future cloud reviews, and preview eligible content before a manual OpenAI request.</li><li><strong>Explicit progress:</strong> suggested goal activity and calorie estimates need confirmation. Mentioning a future plan does not count as completed work.</li><li><strong>Somewhere for the next thought:</strong> proposed new goals, to-dos, and ideas await approval before entering their own lists.</li></ul>
+
+<h2>Progress without losing the story.</h2>
+<p>Daily, weekly, and one-time goals support checkboxes, numeric targets, and partial effort. The app calculates totals and the number of distinct goals worked on each day from confirmed activity. Calendar, search, streaks, and weekly reflections provide different ways back into the journal.</p>
+<figure><img class="phone" src="../images/daybook-weekly.png" alt="Daybook weekly reflection showing journal days, source notes and three distinct goals worked on" width="1080" height="2400" loading="lazy"><figcaption>A weekly overview built from synthetic notes and confirmed activity. The editable weekly reflection makes no additional AI request.</figcaption></figure>
+
+<h2>Recovery is part of the design.</h2>
+<p>Room stores journal data; WorkManager manages transcription, cleanup, and optional daily backups. Recently Deleted keeps notes recoverable for 30 days. Full passphrase-encrypted backups include original audio and photos, and automatic folder backups retain the latest seven successful copies. API credentials and downloaded models stay outside those exports.</p>
+<p>Retries and cancellation preserve saved originals. Model downloads are checksum-verified and resumable. Biometric/device-credential app lock, reduced animations, light and dark themes, and visible processing status round out the daily experience.</p>
+
+<h2>What has been verified.</h2>
+<p>The 0.5.0 beta passed 47 JVM tests and 26 regular Android workflow checks. Separate emulator tests exercised real offline speech and local LLM inference, an encrypted audio/photo backup round trip, and search in a 1,000-entry synthetic journal. The signed APK and Android App Bundle passed package checks.</p>
+<p class="callout">Daybook is a personal beta, not a published Play Store app. Physical Galaxy S26 Ultra microphone behavior, fingerprint hardware, thermal performance, and Samsung background scheduling remain unverified. No live OpenAI request was made during development. Emulator results do not establish phone performance or broad model quality.</p>
+<p><a href="https://github.com/agentcap/daybook/blob/main/docs/verification.md">Verification record ↗</a><br><a href="https://github.com/agentcap/daybook/blob/main/docs/architecture.md">Architecture and recovery design ↗</a><br><a href="https://github.com/agentcap/daybook/tree/main/publishing">Publishing preparation ↗</a></p>
+<a class="button" href="../#daybook">← Back to selected work</a>
+</main>
+</body>
+</html>
