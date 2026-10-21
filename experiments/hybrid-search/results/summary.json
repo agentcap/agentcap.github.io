@@ -1,0 +1,3594 @@
+{
+  "config": {
+    "seed": 20261021,
+    "datasets": [
+      "scifact",
+      "nfcorpus"
+    ],
+    "dense_model": "intfloat/e5-small-v2",
+    "cross_encoders": [
+      "cross-encoder/ms-marco-TinyBERT-L2-v2",
+      "cross-encoder/ms-marco-MiniLM-L6-v2"
+    ],
+    "openai_model": "gpt-6-luna",
+    "jev_model": "jev-1.14.0",
+    "retrieval_depth": 100,
+    "rerank_depth": 50,
+    "rrf_k": 60,
+    "dense_max_tokens": 512,
+    "rerank_passage_tokens": 384,
+    "rerank_query_tokens": 96,
+    "calibration_queries": 80,
+    "api_test_queries_per_dataset": 120,
+    "api_concurrency": 2,
+    "bootstrap_samples": 5000,
+    "gate_max_ndcg_loss": 0.01,
+    "gate_benefit_delta": 0.02,
+    "prices_per_million": {
+      "decisions_input": 0.1,
+      "llm_input": 0.1,
+      "llm_output": 0.5,
+      "jev_input": 0.042,
+      "jev_output": 0
+    }
+  },
+  "datasets": {
+    "scifact": {
+      "corpus_size": 5183,
+      "full_test_queries": 300,
+      "calibration_queries": 80,
+      "calibration_split": "train",
+      "paired_test_queries": 120,
+      "full": {
+        "bm25": {
+          "ndcg10": 0.6765026853278128,
+          "mrr10": 0.6414325396825397,
+          "recall50": 0.8921111111111111,
+          "recall100": 0.9166666666666666,
+          "n": 300,
+          "latency_p50_ms": 11.215521983103827,
+          "latency_p95_ms": 21.708730244426988,
+          "mean_latency_ms": 12.205887625653608,
+          "ndcg10_ci": {
+            "mean": 0.6765026853278128,
+            "low": 0.6329811299374919,
+            "high": 0.7217363872295363
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.049291834614315334,
+            "low": -0.07406605852484796,
+            "high": -0.02464141391812875
+          }
+        },
+        "dense": {
+          "ndcg10": 0.687499226674564,
+          "mrr10": 0.6579748677248677,
+          "recall50": 0.916,
+          "recall100": 0.9276666666666668,
+          "n": 300,
+          "latency_p50_ms": 16.199934034375474,
+          "latency_p95_ms": 22.69701246987097,
+          "mean_latency_ms": 16.287235920123447,
+          "ndcg10_ci": {
+            "mean": 0.687499226674564,
+            "low": 0.6427165742731424,
+            "high": 0.7323785581787585
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.038295293267564055,
+            "low": -0.06473077370595455,
+            "high": -0.011934406630236193
+          }
+        },
+        "hybrid": {
+          "ndcg10": 0.7257945199421282,
+          "mrr10": 0.6991825396825396,
+          "recall50": 0.943,
+          "recall100": 0.9610000000000001,
+          "n": 300,
+          "latency_p50_ms": 27.615696541033685,
+          "latency_p95_ms": 41.387523064622656,
+          "mean_latency_ms": 28.5718088769742,
+          "ndcg10_ci": {
+            "mean": 0.7257945199421282,
+            "low": 0.6834984058505186,
+            "high": 0.7672518102260089
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "ce_tinybert": {
+          "ndcg10": 0.6684047916387955,
+          "mrr10": 0.6343584656084655,
+          "recall50": 0.943,
+          "recall100": 0.9610000000000001,
+          "n": 300,
+          "latency_p50_ms": 46.02593250456266,
+          "latency_p95_ms": 59.789978427579626,
+          "mean_latency_ms": 46.77731050061993,
+          "ndcg10_ci": {
+            "mean": 0.6684047916387955,
+            "low": 0.6250953092364044,
+            "high": 0.7114990599327163
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.057389728303332437,
+            "low": -0.08722470967190525,
+            "high": -0.02817442350003328
+          },
+          "rerank_p50_ms": 18.192230025306344,
+          "rerank_p95_ms": 20.074302537250333
+        },
+        "ce_minilm": {
+          "ndcg10": 0.6968418963441719,
+          "mrr10": 0.6619867724867725,
+          "recall50": 0.943,
+          "recall100": 0.9610000000000001,
+          "n": 300,
+          "latency_p50_ms": 91.47738752653822,
+          "latency_p95_ms": 106.15787859132979,
+          "mean_latency_ms": 91.84299868473317,
+          "ndcg10_ci": {
+            "mean": 0.6968418963441719,
+            "low": 0.6540000477141044,
+            "high": 0.7390066549977777
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.02895262359795616,
+            "low": -0.05567982581992941,
+            "high": -0.0012146719873545244
+          },
+          "rerank_p50_ms": 63.28256049891934,
+          "rerank_p95_ms": 68.08344085584395
+        }
+      },
+      "paired": {
+        "bm25": {
+          "ndcg10": 0.6750799018130623,
+          "mrr10": 0.6281216931216932,
+          "recall50": 0.9,
+          "recall100": 0.9083333333333333,
+          "n": 120,
+          "latency_p50_ms": 11.538049497175962,
+          "latency_p95_ms": 19.93486186256632,
+          "mean_latency_ms": 12.23664843661633,
+          "ndcg10_ci": {
+            "mean": 0.6750799018130623,
+            "low": 0.6058190580234442,
+            "high": 0.744414782937284
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.061475084414269014,
+            "low": -0.10274581861962306,
+            "high": -0.022698984743571193
+          }
+        },
+        "dense": {
+          "ndcg10": 0.6755074964667116,
+          "mrr10": 0.6391997354497355,
+          "recall50": 0.9083333333333333,
+          "recall100": 0.9333333333333333,
+          "n": 120,
+          "latency_p50_ms": 16.34919297066517,
+          "latency_p95_ms": 21.170493992394768,
+          "mean_latency_ms": 16.176096252456773,
+          "ndcg10_ci": {
+            "mean": 0.6755074964667116,
+            "low": 0.605034039072498,
+            "high": 0.7447334603612327
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.06104748976061956,
+            "low": -0.09898549814082723,
+            "high": -0.025948837942519325
+          }
+        },
+        "hybrid": {
+          "ndcg10": 0.7365549862273314,
+          "mrr10": 0.7045238095238096,
+          "recall50": 0.9416666666666667,
+          "recall100": 0.95,
+          "n": 120,
+          "latency_p50_ms": 28.842637460911646,
+          "latency_p95_ms": 38.523474606336094,
+          "mean_latency_ms": 28.492146847323358,
+          "ndcg10_ci": {
+            "mean": 0.7365549862273314,
+            "low": 0.6717922754119126,
+            "high": 0.8010521807891517
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "ce_tinybert": {
+          "ndcg10": 0.6794050977896818,
+          "mrr10": 0.6341402116402115,
+          "recall50": 0.9416666666666667,
+          "recall100": 0.95,
+          "n": 120,
+          "latency_p50_ms": 46.5597829897888,
+          "latency_p95_ms": 56.640977755887434,
+          "mean_latency_ms": 46.793577738086846,
+          "ndcg10_ci": {
+            "mean": 0.6794050977896818,
+            "low": 0.6097604676859157,
+            "high": 0.7466544745609314
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.05714988843764954,
+            "low": -0.10633803986314654,
+            "high": -0.008763824587441757
+          },
+          "rerank_p50_ms": 18.21998049854301,
+          "rerank_p95_ms": 20.676397118950263
+        },
+        "ce_minilm": {
+          "ndcg10": 0.6960282637235655,
+          "mrr10": 0.6624007936507936,
+          "recall50": 0.9416666666666667,
+          "recall100": 0.95,
+          "n": 120,
+          "latency_p50_ms": 91.77610004553571,
+          "latency_p95_ms": 104.59326391573995,
+          "mean_latency_ms": 91.87056289859659,
+          "ndcg10_ci": {
+            "mean": 0.6960282637235655,
+            "low": 0.6271036084364893,
+            "high": 0.7621630496102886
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.040526722503765766,
+            "low": -0.08667114399891047,
+            "high": 0.004178422276010002
+          },
+          "rerank_p50_ms": 63.40735199046321,
+          "rerank_p95_ms": 68.11105861852411
+        },
+        "decisions": {
+          "ndcg10": 0.7707282243476907,
+          "mrr10": 0.7347089947089948,
+          "recall50": 0.9416666666666667,
+          "recall100": 0.95,
+          "n": 120,
+          "latency_p50_ms": 309.1814919607714,
+          "latency_p95_ms": 418.0129493644925,
+          "mean_latency_ms": 328.95416247095756,
+          "ndcg10_ci": {
+            "mean": 0.7707282243476907,
+            "low": 0.7070197447709786,
+            "high": 0.8310278330962326
+          },
+          "api_cost_per_1000": 2.6177691666666667,
+          "delta_vs_hybrid": {
+            "mean": 0.03417323812035936,
+            "low": -0.024156082631376842,
+            "high": 0.0911279232710858
+          },
+          "rerank_p50_ms": 278.96792150568217,
+          "rerank_p95_ms": 386.15802315180173
+        },
+        "jev": {
+          "ndcg10": 0.7986463859630507,
+          "mrr10": 0.7663425925925925,
+          "recall50": 0.9416666666666667,
+          "recall100": 0.95,
+          "n": 120,
+          "latency_p50_ms": 239.34798353002407,
+          "latency_p95_ms": 560.2878182602581,
+          "mean_latency_ms": 281.594993082399,
+          "ndcg10_ci": {
+            "mean": 0.7986463859630507,
+            "low": 0.7372263177761977,
+            "high": 0.8536334771592871
+          },
+          "api_cost_per_1000": 1.01459575,
+          "delta_vs_hybrid": {
+            "mean": 0.06209139973571926,
+            "low": 0.010875929473136783,
+            "high": 0.11286956570584024
+          },
+          "rerank_p50_ms": 211.63132600486279,
+          "rerank_p95_ms": 530.1168763078749
+        },
+        "llm": {
+          "ndcg10": 0.7723050467633428,
+          "mrr10": 0.7482936507936507,
+          "recall50": 0.9416666666666667,
+          "recall100": 0.95,
+          "n": 120,
+          "latency_p50_ms": 2477.4519389902707,
+          "latency_p95_ms": 5881.32038439798,
+          "mean_latency_ms": 3164.2674563908563,
+          "ndcg10_ci": {
+            "mean": 0.7723050467633428,
+            "low": 0.705640472212723,
+            "high": 0.8351173008586293
+          },
+          "api_cost_per_1000": 1.7135525000000003,
+          "delta_vs_hybrid": {
+            "mean": 0.035750060536011444,
+            "low": 0.005467972876415195,
+            "high": 0.06925369848974101
+          },
+          "rerank_p50_ms": 2447.88152599358,
+          "rerank_p95_ms": 5859.50273900234
+        }
+      },
+      "gates": {
+        "cross_encoder": {
+          "heuristic_fixed_0.5": {
+            "ndcg10": 0.694729791235323,
+            "mrr10": 0.6594742063492063,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 90.39635505178012,
+            "latency_p95_ms": 102.58675897493958,
+            "mean_latency_ms": 85.42899112411153,
+            "ndcg10_ci": {
+              "mean": 0.694729791235323,
+              "low": 0.6264006818208083,
+              "high": 0.7602526909200291
+            },
+            "rerank_rate": 0.9,
+            "skip_rate": 0.09999999999999998,
+            "api_cost_per_1000": 0.0,
+            "mean_latency_delta_vs_always_ms": -6.441571774485055,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0012984724882426034,
+              "low": -0.010277499811667484,
+              "high": 0.0077138993504622866
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": -0.04182519499200838,
+              "low": -0.08686617604527033,
+              "high": 0.002891394506684826
+            },
+            "benefit_prevalence": 0.125,
+            "benefit_auc": 0.3657142857142857,
+            "benefit_brier": 0.5742608504240664,
+            "beneficial_query_recall": 0.8,
+            "harmful_skip_rate": 0.025,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.6922159801798468,
+            "calibration_always_ndcg": 0.6887295251608385,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 6.441571774485055
+          },
+          "heuristic_calibrated": {
+            "ndcg10": 0.7365549862273314,
+            "mrr10": 0.7045238095238096,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 28.842637460911646,
+            "latency_p95_ms": 38.523474606336094,
+            "mean_latency_ms": 28.492146847323358,
+            "ndcg10_ci": {
+              "mean": 0.7365549862273314,
+              "low": 0.6717922754119126,
+              "high": 0.8010521807891517
+            },
+            "rerank_rate": 0.0,
+            "skip_rate": 1.0,
+            "api_cost_per_1000": 0.0,
+            "mean_latency_delta_vs_always_ms": -63.378416051273234,
+            "mean_quality_delta_vs_always": {
+              "mean": 0.040526722503765766,
+              "low": -0.0041784222760100345,
+              "high": 0.08667114399891047
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.0,
+              "low": 0.0,
+              "high": 0.0
+            },
+            "benefit_prevalence": 0.125,
+            "benefit_auc": 0.3657142857142857,
+            "benefit_brier": 0.5742608504240664,
+            "beneficial_query_recall": 0.0,
+            "harmful_skip_rate": 0.125,
+            "threshold": 1.01,
+            "calibration_ndcg": 0.7442923250155393,
+            "calibration_always_ndcg": 0.6887295251608385,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 63.378416051273234
+          },
+          "decisions_fixed_0.5": {
+            "ndcg10": 0.6929526783366611,
+            "mrr10": 0.658234126984127,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 241.10378851764835,
+            "latency_p95_ms": 326.786307254224,
+            "mean_latency_ms": 254.12257479474647,
+            "ndcg10_ci": {
+              "mean": 0.6929526783366611,
+              "low": 0.6234601455300232,
+              "high": 0.7596507017537469
+            },
+            "rerank_rate": 0.9416666666666667,
+            "skip_rate": 0.05833333333333335,
+            "api_cost_per_1000": 0.4197066666666667,
+            "mean_latency_delta_vs_always_ms": 162.25201189614987,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0030755853869045206,
+              "low": -0.009226756160713561,
+              "high": 0.0
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": -0.043602307890670294,
+              "low": -0.08890803225463115,
+              "high": 0.0010750166842176472
+            },
+            "benefit_prevalence": 0.125,
+            "benefit_auc": 0.3549206349206349,
+            "benefit_brier": 0.43450666666666665,
+            "beneficial_query_recall": 0.9333333333333333,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.6781048185595344,
+            "calibration_always_ndcg": 0.6887295251608385,
+            "gate_mean_ms": 166.042638020978,
+            "saved_rerank_mean_ms": 3.7906261248281226
+          },
+          "decisions_calibrated": {
+            "ndcg10": 0.7365549862273314,
+            "mrr10": 0.7045238095238096,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 179.9746570759453,
+            "latency_p95_ms": 267.1114750672131,
+            "mean_latency_ms": 194.53478486830136,
+            "ndcg10_ci": {
+              "mean": 0.7365549862273314,
+              "low": 0.6717922754119126,
+              "high": 0.8010521807891517
+            },
+            "rerank_rate": 0.0,
+            "skip_rate": 1.0,
+            "api_cost_per_1000": 0.4197066666666667,
+            "mean_latency_delta_vs_always_ms": 102.66422196970477,
+            "mean_quality_delta_vs_always": {
+              "mean": 0.040526722503765766,
+              "low": -0.0041784222760100345,
+              "high": 0.08667114399891047
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.0,
+              "low": 0.0,
+              "high": 0.0
+            },
+            "benefit_prevalence": 0.125,
+            "benefit_auc": 0.3549206349206349,
+            "benefit_brier": 0.43450666666666665,
+            "beneficial_query_recall": 0.0,
+            "harmful_skip_rate": 0.125,
+            "threshold": 0.8500000000000001,
+            "calibration_ndcg": 0.7442923250155393,
+            "calibration_always_ndcg": 0.6887295251608385,
+            "gate_mean_ms": 166.042638020978,
+            "saved_rerank_mean_ms": 63.378416051273234
+          },
+          "jev_fixed_0.5": {
+            "ndcg10": 0.6929526783366611,
+            "mrr10": 0.658234126984127,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 201.59529004013166,
+            "latency_p95_ms": 236.7326890846016,
+            "mean_latency_ms": 205.0023960735416,
+            "ndcg10_ci": {
+              "mean": 0.6929526783366611,
+              "low": 0.6234601455300232,
+              "high": 0.7596507017537469
+            },
+            "rerank_rate": 0.975,
+            "skip_rate": 0.025000000000000022,
+            "api_cost_per_1000": 0.20439965000000002,
+            "mean_latency_delta_vs_always_ms": 113.13183317494502,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0030755853869045206,
+              "low": -0.009226756160713561,
+              "high": 0.0
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": -0.043602307890670294,
+              "low": -0.08890803225463115,
+              "high": 0.0010750166842176472
+            },
+            "benefit_prevalence": 0.125,
+            "benefit_auc": 0.42984126984126986,
+            "benefit_brier": 0.3708566666666666,
+            "beneficial_query_recall": 0.9333333333333333,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.6887295251608385,
+            "calibration_always_ndcg": 0.6887295251608385,
+            "gate_mean_ms": 114.70930067492493,
+            "saved_rerank_mean_ms": 1.577467499979927
+          },
+          "jev_calibrated": {
+            "ndcg10": 0.7365549862273314,
+            "mrr10": 0.7045238095238096,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 138.8436830311548,
+            "latency_p95_ms": 180.1978815114125,
+            "mean_latency_ms": 144.2612488225374,
+            "ndcg10_ci": {
+              "mean": 0.7365549862273314,
+              "low": 0.6717922754119126,
+              "high": 0.8010521807891517
+            },
+            "rerank_rate": 0.016666666666666666,
+            "skip_rate": 0.9833333333333333,
+            "api_cost_per_1000": 0.20439965000000002,
+            "mean_latency_delta_vs_always_ms": 52.390685923940815,
+            "mean_quality_delta_vs_always": {
+              "mean": 0.040526722503765766,
+              "low": -0.0041784222760100345,
+              "high": 0.08667114399891047
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.0,
+              "low": 0.0,
+              "high": 0.0
+            },
+            "benefit_prevalence": 0.125,
+            "benefit_auc": 0.42984126984126986,
+            "benefit_brier": 0.3708566666666666,
+            "beneficial_query_recall": 0.0,
+            "harmful_skip_rate": 0.125,
+            "threshold": 0.7000000000000001,
+            "calibration_ndcg": 0.7442923250155393,
+            "calibration_always_ndcg": 0.6887295251608385,
+            "gate_mean_ms": 114.70930067492493,
+            "saved_rerank_mean_ms": 62.318614750984125
+          }
+        },
+        "llm": {
+          "heuristic_fixed_0.5": {
+            "ndcg10": 0.7647867847696411,
+            "mrr10": 0.7412003968253967,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 2380.0756329728756,
+            "latency_p95_ms": 5741.816947684856,
+            "mean_latency_ms": 2851.383111649193,
+            "ndcg10_ci": {
+              "mean": 0.7647867847696411,
+              "low": 0.6981578647019568,
+              "high": 0.8269746947273916
+            },
+            "rerank_rate": 0.9,
+            "skip_rate": 0.09999999999999998,
+            "api_cost_per_1000": 1.53624,
+            "mean_latency_delta_vs_always_ms": -312.88434474166326,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.007518261993701597,
+              "low": -0.016941717191429943,
+              "high": -0.0007581379732111316
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.02823179854230984,
+              "low": -0.0022878845380267347,
+              "high": 0.06125575626656865
+            },
+            "benefit_prevalence": 0.15,
+            "benefit_auc": 0.43464052287581695,
+            "benefit_brier": 0.5583682248178187,
+            "beneficial_query_recall": 0.7222222222222222,
+            "harmful_skip_rate": 0.041666666666666664,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.8242419789703167,
+            "calibration_always_ndcg": 0.8286054673477276,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 312.88434474166326
+          },
+          "heuristic_calibrated": {
+            "ndcg10": 0.7717280021275966,
+            "mrr10": 0.7482936507936507,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 2477.4519389902707,
+            "latency_p95_ms": 5881.32038439798,
+            "mean_latency_ms": 3128.025510707812,
+            "ndcg10_ci": {
+              "mean": 0.7717280021275966,
+              "low": 0.705204982702591,
+              "high": 0.8345704867967169
+            },
+            "rerank_rate": 0.9833333333333333,
+            "skip_rate": 0.01666666666666672,
+            "api_cost_per_1000": 1.6841983333333335,
+            "mean_latency_delta_vs_always_ms": -36.24194568304423,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0005770446357461453,
+              "low": -0.0017311339072384358,
+              "high": 0.0
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.035173015900265295,
+              "low": 0.004753135283061544,
+              "high": 0.06880864202406466
+            },
+            "benefit_prevalence": 0.15,
+            "benefit_auc": 0.43464052287581695,
+            "benefit_brier": 0.5583682248178187,
+            "beneficial_query_recall": 0.9444444444444444,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.35000000000000003,
+            "calibration_ndcg": 0.8242419789703167,
+            "calibration_always_ndcg": 0.8286054673477276,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 36.24194568304423
+          },
+          "decisions_fixed_0.5": {
+            "ndcg10": 0.7696462694145976,
+            "mrr10": 0.7443253968253968,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 2500.007770519005,
+            "latency_p95_ms": 5592.283929476979,
+            "mean_latency_ms": 2759.53725118549,
+            "ndcg10_ci": {
+              "mean": 0.7696462694145976,
+              "low": 0.7027749640813005,
+              "high": 0.8318322087397955
+            },
+            "rerank_rate": 0.8166666666666667,
+            "skip_rate": 0.18333333333333335,
+            "api_cost_per_1000": 1.8246358333333335,
+            "mean_latency_delta_vs_always_ms": -404.7302052053662,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.002658777348745127,
+              "low": -0.009226756160713561,
+              "high": 0.0008691932182333652
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.03309128318726631,
+              "low": 0.0022977683692514796,
+              "high": 0.06659319993023019
+            },
+            "benefit_prevalence": 0.15,
+            "benefit_auc": 0.5950435729847494,
+            "benefit_brier": 0.35955166666666666,
+            "beneficial_query_recall": 0.9444444444444444,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.812857683807772,
+            "calibration_always_ndcg": 0.8286054673477276,
+            "gate_mean_ms": 166.042638020978,
+            "saved_rerank_mean_ms": 570.7728432263442
+          },
+          "decisions_calibrated": {
+            "ndcg10": 0.7696462694145976,
+            "mrr10": 0.7443253968253968,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 2503.5006189718843,
+            "latency_p95_ms": 5929.274716461077,
+            "mean_latency_ms": 2870.5353074028003,
+            "ndcg10_ci": {
+              "mean": 0.7696462694145976,
+              "low": 0.7027749640813005,
+              "high": 0.8318322087397955
+            },
+            "rerank_rate": 0.8416666666666667,
+            "skip_rate": 0.15833333333333333,
+            "api_cost_per_1000": 1.8637775000000003,
+            "mean_latency_delta_vs_always_ms": -293.732148988056,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.002658777348745127,
+              "low": -0.009226756160713561,
+              "high": 0.0008691932182333652
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.03309128318726631,
+              "low": 0.0022977683692514796,
+              "high": 0.06659319993023019
+            },
+            "benefit_prevalence": 0.15,
+            "benefit_auc": 0.5950435729847494,
+            "benefit_brier": 0.35955166666666666,
+            "beneficial_query_recall": 0.9444444444444444,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.45,
+            "calibration_ndcg": 0.8205220237173403,
+            "calibration_always_ndcg": 0.8286054673477276,
+            "gate_mean_ms": 166.042638020978,
+            "saved_rerank_mean_ms": 459.774787009034
+          },
+          "jev_fixed_0.5": {
+            "ndcg10": 0.7692294613764382,
+            "mrr10": 0.7441269841269841,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 2597.5030469708145,
+            "latency_p95_ms": 5986.154883584816,
+            "mean_latency_ms": 3244.6961552316984,
+            "ndcg10_ci": {
+              "mean": 0.7692294613764382,
+              "low": 0.7022042184403957,
+              "high": 0.8314932139753437
+            },
+            "rerank_rate": 0.9833333333333333,
+            "skip_rate": 0.01666666666666672,
+            "api_cost_per_1000": 1.8924804833333335,
+            "mean_latency_delta_vs_always_ms": 80.42869884084212,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0030755853869045206,
+              "low": -0.009226756160713561,
+              "high": 0.0
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.032674475149106916,
+              "low": 0.0019769160706850247,
+              "high": 0.06624777691201943
+            },
+            "benefit_prevalence": 0.15,
+            "benefit_auc": 0.48011982570806105,
+            "benefit_brier": 0.38568583333333334,
+            "beneficial_query_recall": 0.9444444444444444,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.8286054673477276,
+            "calibration_always_ndcg": 0.8286054673477276,
+            "gate_mean_ms": 114.70930067492493,
+            "saved_rerank_mean_ms": 34.28060183408282
+          },
+          "jev_calibrated": {
+            "ndcg10": 0.7691200125139207,
+            "mrr10": 0.7462103174603174,
+            "recall50": 0.9416666666666667,
+            "recall100": 0.95,
+            "n": 120,
+            "latency_p50_ms": 2463.4664044715464,
+            "latency_p95_ms": 5847.73081226158,
+            "mean_latency_ms": 2820.2127144143255,
+            "ndcg10_ci": {
+              "mean": 0.7691200125139207,
+              "low": 0.7026944022501093,
+              "high": 0.8305996705597948
+            },
+            "rerank_rate": 0.85,
+            "skip_rate": 0.15000000000000002,
+            "api_cost_per_1000": 1.6458654833333335,
+            "mean_latency_delta_vs_always_ms": -344.05474197653047,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.003185034249422075,
+              "low": -0.011196771279433379,
+              "high": 0.0032284724058344234
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.03256502628658937,
+              "low": 0.0023479292279621846,
+              "high": 0.06596996724888927
+            },
+            "benefit_prevalence": 0.15,
+            "benefit_auc": 0.48011982570806105,
+            "benefit_brier": 0.38568583333333334,
+            "beneficial_query_recall": 0.7777777777777778,
+            "harmful_skip_rate": 0.03333333333333333,
+            "threshold": 0.6000000000000001,
+            "calibration_ndcg": 0.8205220237173403,
+            "calibration_always_ndcg": 0.8286054673477276,
+            "gate_mean_ms": 114.70930067492493,
+            "saved_rerank_mean_ms": 458.7640426514554
+          }
+        }
+      },
+      "gate_curves": {
+        "cross_encoder": {
+          "heuristic": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 91.87056289859659
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.6952771112970102,
+              "mean_latency_ms": 90.82860794005683
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.6952771112970102,
+              "mean_latency_ms": 90.82860794005683
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.6952771112970102,
+              "mean_latency_ms": 90.82860794005683
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.1,
+              "ndcg10": 0.694729791235323,
+              "mean_latency_ms": 85.42899112411153
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.1,
+              "ndcg10": 0.694729791235323,
+              "mean_latency_ms": 85.42899112411153
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.175,
+              "ndcg10": 0.6993623858112215,
+              "mean_latency_ms": 80.71626214853798
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.175,
+              "ndcg10": 0.6993623858112215,
+              "mean_latency_ms": 80.71626214853798
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.275,
+              "ndcg10": 0.7000882691673265,
+              "mean_latency_ms": 74.24056532375592
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.275,
+              "ndcg10": 0.7000882691673265,
+              "mean_latency_ms": 74.24056532375592
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.44166666666666665,
+              "ndcg10": 0.7039750480937316,
+              "mean_latency_ms": 63.76436207356164
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 0.6333333333333333,
+              "ndcg10": 0.7191757344807946,
+              "mean_latency_ms": 51.65051664807834
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 0.8333333333333334,
+              "ndcg10": 0.7227085247798483,
+              "mean_latency_ms": 38.97540932230186
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 0.9583333333333334,
+              "ndcg10": 0.7203767426179138,
+              "mean_latency_ms": 31.06418668855137
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 0.9583333333333334,
+              "ndcg10": 0.7203767426179138,
+              "mean_latency_ms": 31.06418668855137
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 28.492146847323358
+            }
+          ],
+          "decisions": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 257.9132009195746
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 257.9132009195746
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.025,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 256.28586134456174
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.041666666666666664,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 255.1889231443056
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.05,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.67250990283597
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.05,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.67250990283597
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.05,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.67250990283597
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.05,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.67250990283597
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.058333333333333334,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.12257479474647
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.058333333333333334,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.12257479474647
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.058333333333333334,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 254.12257479474647
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.075,
+              "ndcg10": 0.6922015259101056,
+              "mean_latency_ms": 253.02557735315835
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.15,
+              "ndcg10": 0.6910355146533178,
+              "mean_latency_ms": 248.24866965354886
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.21666666666666667,
+              "ndcg10": 0.6884807346834617,
+              "mean_latency_ms": 244.12043221964268
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.5083333333333333,
+              "ndcg10": 0.7072783927033076,
+              "mean_latency_ms": 225.61269957077457
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.7916666666666666,
+              "ndcg10": 0.7388688485204007,
+              "mean_latency_ms": 207.67833631883454
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.9833333333333333,
+              "ndcg10": 0.7293127341737602,
+              "mean_latency_ms": 195.59391960210633
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            }
+          ],
+          "jev": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.0,
+              "ndcg10": 0.6960282637235655,
+              "mean_latency_ms": 206.57986357352152
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 206.06729089049622
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 206.06729089049622
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.025,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 205.0023960735416
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.041666666666666664,
+              "ndcg10": 0.6929526783366611,
+              "mean_latency_ms": 203.98888365695407
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.18333333333333332,
+              "ndcg10": 0.6993522247444626,
+              "mean_latency_ms": 194.89158523938386
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.6,
+              "ndcg10": 0.7247312900363502,
+              "mean_latency_ms": 168.58040288934717
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.9833333333333333,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 144.2612488225374
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            }
+          ]
+        },
+        "llm": {
+          "heuristic": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3164.2674563908563
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.7717280021275966,
+              "mean_latency_ms": 3128.025510707812
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.7717280021275966,
+              "mean_latency_ms": 3128.025510707812
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.7717280021275966,
+              "mean_latency_ms": 3128.025510707812
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.1,
+              "ndcg10": 0.7647867847696411,
+              "mean_latency_ms": 2851.383111649193
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.1,
+              "ndcg10": 0.7647867847696411,
+              "mean_latency_ms": 2851.383111649193
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.175,
+              "ndcg10": 0.7695343396924282,
+              "mean_latency_ms": 2686.23633330717
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.175,
+              "ndcg10": 0.7695343396924282,
+              "mean_latency_ms": 2686.23633330717
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.275,
+              "ndcg10": 0.7701689230987729,
+              "mean_latency_ms": 2356.130751115658
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.275,
+              "ndcg10": 0.7701689230987729,
+              "mean_latency_ms": 2356.130751115658
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.44166666666666665,
+              "ndcg10": 0.7623489756958134,
+              "mean_latency_ms": 1741.3266030576779
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 0.6333333333333333,
+              "ndcg10": 0.7612578944160513,
+              "mean_latency_ms": 1086.9639154048248
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 0.8333333333333334,
+              "ndcg10": 0.7467733903089091,
+              "mean_latency_ms": 475.07895057254547
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 0.9583333333333334,
+              "ndcg10": 0.733926112254117,
+              "mean_latency_ms": 126.81701888116852
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 0.9583333333333334,
+              "ndcg10": 0.733926112254117,
+              "mean_latency_ms": 126.81701888116852
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 28.492146847323358
+            }
+          ],
+          "decisions": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3330.310094411834
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3330.310094411834
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3298.4980331112943
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.025,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3265.7860167862964
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.058333333333333334,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3147.988972235665
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.075,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3103.3795288191563
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.08333333333333333,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3071.574748510708
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.10833333333333334,
+              "ndcg10": 0.7694556539664752,
+              "mean_latency_ms": 3015.604673677202
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.7696462694145976,
+              "mean_latency_ms": 2996.012315960737
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.15833333333333333,
+              "ndcg10": 0.7696462694145976,
+              "mean_latency_ms": 2870.5353074028003
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.18333333333333332,
+              "ndcg10": 0.7696462694145976,
+              "mean_latency_ms": 2759.53725118549
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.23333333333333334,
+              "ndcg10": 0.7696462694145976,
+              "mean_latency_ms": 2594.548467977438
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.2916666666666667,
+              "ndcg10": 0.7682041755666024,
+              "mean_latency_ms": 2408.0410222605374
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.39166666666666666,
+              "ndcg10": 0.7740216989935544,
+              "mean_latency_ms": 2112.9400732102417
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.625,
+              "ndcg10": 0.7662245403175647,
+              "mean_latency_ms": 1454.3423472180923
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.8666666666666667,
+              "ndcg10": 0.7465570961898151,
+              "mean_latency_ms": 720.978148826786
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.975,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 278.0678020096578
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 194.53478486830136
+            }
+          ],
+          "jev": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.0,
+              "ndcg10": 0.7723050467633428,
+              "mean_latency_ms": 3278.976757065781
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3263.532720415484
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3263.532720415484
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.7692294613764382,
+              "mean_latency_ms": 3244.6961552316984
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.03333333333333333,
+              "ndcg10": 0.7686524167406922,
+              "mean_latency_ms": 3212.0065082485476
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.15,
+              "ndcg10": 0.7691200125139207,
+              "mean_latency_ms": 2820.2127144143255
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.4,
+              "ndcg10": 0.7639787841368726,
+              "mean_latency_ms": 2111.884556864485
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.825,
+              "ndcg10": 0.7546105417828869,
+              "mean_latency_ms": 717.5664938801978
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.7365549862273314,
+              "mean_latency_ms": 143.2014475222483
+            }
+          ]
+        }
+      },
+      "paired_differences": {
+        "bm25 - dense": {
+          "mean": -0.0004275946536494638,
+          "low": -0.054586192027591206,
+          "high": 0.05346315184127989
+        },
+        "bm25 - hybrid": {
+          "mean": -0.061475084414269014,
+          "low": -0.10274581861962306,
+          "high": -0.022698984743571193
+        },
+        "bm25 - ce_tinybert": {
+          "mean": -0.004325195976619482,
+          "low": -0.04901889339324552,
+          "high": 0.03935280374938278
+        },
+        "bm25 - ce_minilm": {
+          "mean": -0.02094836191050325,
+          "low": -0.06562829035997149,
+          "high": 0.023012206955573128
+        },
+        "bm25 - decisions": {
+          "mean": -0.09564832253462838,
+          "low": -0.15046895078599878,
+          "high": -0.041987245484709765
+        },
+        "bm25 - jev": {
+          "mean": -0.12356648414998825,
+          "low": -0.1695261565045297,
+          "high": -0.07898129958896659
+        },
+        "bm25 - llm": {
+          "mean": -0.09722514495028046,
+          "low": -0.14374047580605293,
+          "high": -0.05335403978129833
+        },
+        "dense - hybrid": {
+          "mean": -0.06104748976061956,
+          "low": -0.09898549814082723,
+          "high": -0.025948837942519325
+        },
+        "dense - ce_tinybert": {
+          "mean": -0.003897601322970018,
+          "low": -0.05785681827328352,
+          "high": 0.05080897170378316
+        },
+        "dense - ce_minilm": {
+          "mean": -0.02052076725685379,
+          "low": -0.06819494796704126,
+          "high": 0.02689368677986913
+        },
+        "dense - decisions": {
+          "mean": -0.09522072788097892,
+          "low": -0.157614989580199,
+          "high": -0.03381122697151342
+        },
+        "dense - jev": {
+          "mean": -0.1231388894963388,
+          "low": -0.1803823888199805,
+          "high": -0.06625767538500407
+        },
+        "dense - llm": {
+          "mean": -0.09679755029663098,
+          "low": -0.14597960432380294,
+          "high": -0.050970481637473676
+        },
+        "hybrid - ce_tinybert": {
+          "mean": 0.05714988843764954,
+          "low": 0.008763824587441748,
+          "high": 0.10633803986314652
+        },
+        "hybrid - ce_minilm": {
+          "mean": 0.040526722503765766,
+          "low": -0.0041784222760100345,
+          "high": 0.08667114399891047
+        },
+        "hybrid - decisions": {
+          "mean": -0.03417323812035936,
+          "low": -0.09112792327108582,
+          "high": 0.024156082631376738
+        },
+        "hybrid - jev": {
+          "mean": -0.06209139973571926,
+          "low": -0.1128695657058403,
+          "high": -0.010875929473136843
+        },
+        "hybrid - llm": {
+          "mean": -0.035750060536011444,
+          "low": -0.06925369848974104,
+          "high": -0.005467972876415223
+        },
+        "ce_tinybert - ce_minilm": {
+          "mean": -0.01662316593388377,
+          "low": -0.04829366720558797,
+          "high": 0.01435914182741959
+        },
+        "ce_tinybert - decisions": {
+          "mean": -0.09132312655800892,
+          "low": -0.15793805713526296,
+          "high": -0.023676252943782745
+        },
+        "ce_tinybert - jev": {
+          "mean": -0.11924128817336879,
+          "low": -0.1761743721574634,
+          "high": -0.06471871376093624
+        },
+        "ce_tinybert - llm": {
+          "mean": -0.09289994897366098,
+          "low": -0.14640515124722053,
+          "high": -0.04233655725772568
+        },
+        "ce_minilm - decisions": {
+          "mean": -0.07469996062412514,
+          "low": -0.13447771833973696,
+          "high": -0.013301046819284908
+        },
+        "ce_minilm - jev": {
+          "mean": -0.10261812223948504,
+          "low": -0.157423999678397,
+          "high": -0.0496869427530376
+        },
+        "ce_minilm - llm": {
+          "mean": -0.07627678303977721,
+          "low": -0.12526561419471718,
+          "high": -0.02929449130543137
+        },
+        "decisions - jev": {
+          "mean": -0.027918161615359885,
+          "low": -0.0654072241472616,
+          "high": 0.008268441252227988
+        },
+        "decisions - llm": {
+          "mean": -0.0015768224156520677,
+          "low": -0.05035270491036755,
+          "high": 0.04798884327794012
+        },
+        "jev - llm": {
+          "mean": 0.026341339199707818,
+          "low": -0.015835547508716633,
+          "high": 0.07026038755129015
+        }
+      },
+      "oracle_cross_encoder": 0.7825349150420219,
+      "rerank_effect_cross_encoder": {
+        "improves": 16,
+        "ties": 78,
+        "hurts": 26
+      },
+      "oracle_llm": 0.7888400097225282,
+      "rerank_effect_llm": {
+        "improves": 18,
+        "ties": 94,
+        "hurts": 8
+      }
+    },
+    "nfcorpus": {
+      "corpus_size": 3633,
+      "full_test_queries": 323,
+      "calibration_queries": 80,
+      "calibration_split": "dev",
+      "paired_test_queries": 120,
+      "full": {
+        "bm25": {
+          "ndcg10": 0.32004608396536427,
+          "mrr10": 0.516578210231461,
+          "recall50": 0.21734314194778778,
+          "recall100": 0.24245837512413326,
+          "n": 323,
+          "latency_p50_ms": 1.8033350352197886,
+          "latency_p95_ms": 5.863665166543796,
+          "mean_latency_ms": 2.420012100279654,
+          "ndcg10_ci": {
+            "mean": 0.32004608396536427,
+            "low": 0.28681779134989654,
+            "high": 0.3534223727526262
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.02602101706681704,
+            "low": -0.03817194981256167,
+            "high": -0.014005413958085055
+          }
+        },
+        "dense": {
+          "ndcg10": 0.32554296075648803,
+          "mrr10": 0.5236780677183154,
+          "recall50": 0.24368501600684636,
+          "recall100": 0.29706719490377437,
+          "n": 323,
+          "latency_p50_ms": 9.883983992040157,
+          "latency_p95_ms": 14.930191368330266,
+          "mean_latency_ms": 9.749772330968073,
+          "ndcg10_ci": {
+            "mean": 0.32554296075648803,
+            "low": 0.29229877650284414,
+            "high": 0.3601711501268893
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.020524140275693315,
+            "low": -0.032225796010982716,
+            "high": -0.008795164358909336
+          }
+        },
+        "hybrid": {
+          "ndcg10": 0.3460671010321813,
+          "mrr10": 0.55406162464986,
+          "recall50": 0.24728689729718759,
+          "recall100": 0.29642859544688244,
+          "n": 323,
+          "latency_p50_ms": 11.740779038518667,
+          "latency_p95_ms": 18.770793016301468,
+          "mean_latency_ms": 12.240600775986413,
+          "ndcg10_ci": {
+            "mean": 0.3460671010321813,
+            "low": 0.3123751687626015,
+            "high": 0.38085527742260206
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "ce_tinybert": {
+          "ndcg10": 0.33677008161148847,
+          "mrr10": 0.5572939702196668,
+          "recall50": 0.24728689729718759,
+          "recall100": 0.29642859544688244,
+          "n": 323,
+          "latency_p50_ms": 29.49300699401647,
+          "latency_p95_ms": 36.43813897506333,
+          "mean_latency_ms": 29.872728139378314,
+          "ndcg10_ci": {
+            "mean": 0.33677008161148847,
+            "low": 0.3034738086075647,
+            "high": 0.37036572269747403
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.00929701942069285,
+            "low": -0.021691927885544977,
+            "high": 0.003041477818958631
+          },
+          "rerank_p50_ms": 17.692786001134664,
+          "rerank_p95_ms": 18.9533163968008
+        },
+        "ce_minilm": {
+          "ndcg10": 0.35649871267394134,
+          "mrr10": 0.5834905892181433,
+          "recall50": 0.24728689729718759,
+          "recall100": 0.29642859544688244,
+          "n": 323,
+          "latency_p50_ms": 73.6989650176838,
+          "latency_p95_ms": 81.95002368884161,
+          "mean_latency_ms": 73.65756724393803,
+          "ndcg10_ci": {
+            "mean": 0.35649871267394134,
+            "low": 0.32271394264732783,
+            "high": 0.391298482378121
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.010431611641760024,
+            "low": -0.0008252393570153867,
+            "high": 0.021932644724087652
+          },
+          "rerank_p50_ms": 62.432926963083446,
+          "rerank_p95_ms": 64.52476281556301
+        }
+      },
+      "paired": {
+        "bm25": {
+          "ndcg10": 0.3133968892453038,
+          "mrr10": 0.5068022486772487,
+          "recall50": 0.217397627913647,
+          "recall100": 0.24221865916092414,
+          "n": 120,
+          "latency_p50_ms": 1.7855515179689974,
+          "latency_p95_ms": 5.905699275899678,
+          "mean_latency_ms": 2.471631961816456,
+          "ndcg10_ci": {
+            "mean": 0.3133968892453038,
+            "low": 0.25820321424846093,
+            "high": 0.3694460882135787
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.01804888512120427,
+            "low": -0.030861235254206566,
+            "high": -0.005392166980700178
+          }
+        },
+        "dense": {
+          "ndcg10": 0.31044578892640257,
+          "mrr10": 0.5144444444444445,
+          "recall50": 0.23290702538855926,
+          "recall100": 0.28334874119578507,
+          "n": 120,
+          "latency_p50_ms": 9.916481008986011,
+          "latency_p95_ms": 15.329313476104288,
+          "mean_latency_ms": 9.893187426496297,
+          "ndcg10_ci": {
+            "mean": 0.31044578892640257,
+            "low": 0.25632338855895104,
+            "high": 0.3656292641732027
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": -0.02099998544010546,
+            "low": -0.03709222924090341,
+            "high": -0.004799360814516538
+          }
+        },
+        "hybrid": {
+          "ndcg10": 0.331445774366508,
+          "mrr10": 0.5416898148148147,
+          "recall50": 0.24432201917614135,
+          "recall100": 0.2840079388950448,
+          "n": 120,
+          "latency_p50_ms": 11.685764009598643,
+          "latency_p95_ms": 20.04468600207474,
+          "mean_latency_ms": 12.433378939749673,
+          "ndcg10_ci": {
+            "mean": 0.331445774366508,
+            "low": 0.27593550012474255,
+            "high": 0.38851694372374346
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "ce_tinybert": {
+          "ndcg10": 0.3384335071602019,
+          "mrr10": 0.5603075396825398,
+          "recall50": 0.24432201917614135,
+          "recall100": 0.2840079388950448,
+          "n": 120,
+          "latency_p50_ms": 29.34835647465661,
+          "latency_p95_ms": 37.04597898758947,
+          "mean_latency_ms": 30.108734988607466,
+          "ndcg10_ci": {
+            "mean": 0.3384335071602019,
+            "low": 0.2816905647785929,
+            "high": 0.394496492166885
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.006987732793693872,
+            "low": -0.00883249637982684,
+            "high": 0.023505873782347895
+          },
+          "rerank_p50_ms": 17.74430848308839,
+          "rerank_p95_ms": 18.962418544106185
+        },
+        "ce_minilm": {
+          "ndcg10": 0.34897865116095855,
+          "mrr10": 0.5983763227513227,
+          "recall50": 0.24432201917614135,
+          "recall100": 0.2840079388950448,
+          "n": 120,
+          "latency_p50_ms": 73.93974653678015,
+          "latency_p95_ms": 82.04532875679433,
+          "mean_latency_ms": 73.72137091685242,
+          "ndcg10_ci": {
+            "mean": 0.34897865116095855,
+            "low": 0.2912902544092065,
+            "high": 0.4075477983952859
+          },
+          "api_cost_per_1000": 0.0,
+          "delta_vs_hybrid": {
+            "mean": 0.017532876794450498,
+            "low": 0.00043842592606729657,
+            "high": 0.035592486225736894
+          },
+          "rerank_p50_ms": 62.286413507536054,
+          "rerank_p95_ms": 64.34377832338214
+        },
+        "decisions": {
+          "ndcg10": 0.361495547992431,
+          "mrr10": 0.5673445767195767,
+          "recall50": 0.24432201917614135,
+          "recall100": 0.2840079388950448,
+          "n": 120,
+          "latency_p50_ms": 301.95690353866667,
+          "latency_p95_ms": 638.6076062277424,
+          "mean_latency_ms": 338.796875863045,
+          "ndcg10_ci": {
+            "mean": 0.361495547992431,
+            "low": 0.3015935446689321,
+            "high": 0.42092561472126566
+          },
+          "api_cost_per_1000": 2.644954166666667,
+          "delta_vs_hybrid": {
+            "mean": 0.030049773625923027,
+            "low": 0.001998294499125943,
+            "high": 0.058843678259264
+          },
+          "rerank_p50_ms": 290.76390599948354,
+          "rerank_p95_ms": 628.5266462335129
+        },
+        "jev": {
+          "ndcg10": 0.39818580212505345,
+          "mrr10": 0.6205654761904761,
+          "recall50": 0.24432201917614135,
+          "recall100": 0.2840079388950448,
+          "n": 120,
+          "latency_p50_ms": 216.85312304180115,
+          "latency_p95_ms": 284.8102892341558,
+          "mean_latency_ms": 223.2860593003958,
+          "ndcg10_ci": {
+            "mean": 0.39818580212505345,
+            "low": 0.3374880661361032,
+            "high": 0.4591340397001553
+          },
+          "api_cost_per_1000": 1.0217165,
+          "delta_vs_hybrid": {
+            "mean": 0.06674002775854544,
+            "low": 0.0401631404325131,
+            "high": 0.09403196204309111
+          },
+          "rerank_p50_ms": 204.26947152009234,
+          "rerank_p95_ms": 272.01203790318687
+        },
+        "llm": {
+          "ndcg10": 0.3507940022152597,
+          "mrr10": 0.5808564814814814,
+          "recall50": 0.24432201917614135,
+          "recall100": 0.2840079388950448,
+          "n": 120,
+          "latency_p50_ms": 2465.811367961578,
+          "latency_p95_ms": 4926.654438517288,
+          "mean_latency_ms": 2753.54206119761,
+          "ndcg10_ci": {
+            "mean": 0.3507940022152597,
+            "low": 0.295281338343593,
+            "high": 0.4066918531186454
+          },
+          "api_cost_per_1000": 1.7546983333333335,
+          "delta_vs_hybrid": {
+            "mean": 0.019348227848751665,
+            "low": 0.005050910446019793,
+            "high": 0.0348428236619295
+          },
+          "rerank_p50_ms": 2455.106210982194,
+          "rerank_p95_ms": 4913.077520023216
+        }
+      },
+      "gates": {
+        "cross_encoder": {
+          "heuristic_fixed_0.5": {
+            "ndcg10": 0.35202431669033063,
+            "mrr10": 0.5983763227513227,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 72.48160999733955,
+            "latency_p95_ms": 81.21795654878952,
+            "mean_latency_ms": 66.43642096605618,
+            "ndcg10_ci": {
+              "mean": 0.35202431669033063,
+              "low": 0.29396362194110187,
+              "high": 0.4104548758933819
+            },
+            "rerank_rate": 0.8833333333333333,
+            "skip_rate": 0.1166666666666667,
+            "api_cost_per_1000": 0.0,
+            "mean_latency_delta_vs_always_ms": -7.284949950796242,
+            "mean_quality_delta_vs_always": {
+              "mean": 0.0030456655293720327,
+              "low": 0.00022219063427967152,
+              "high": 0.0066287707090528745
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.020578542323822533,
+              "low": 0.00419625748202064,
+              "high": 0.03810949094331904
+            },
+            "benefit_prevalence": 0.31666666666666665,
+            "benefit_auc": 0.4579589216944801,
+            "benefit_brier": 0.4755618594293442,
+            "beneficial_query_recall": 0.9736842105263158,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.3547125211747825,
+            "calibration_always_ndcg": 0.3479784148157054,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 7.284949950796242
+          },
+          "heuristic_calibrated": {
+            "ndcg10": 0.33181058721222195,
+            "mrr10": 0.5429497354497355,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 12.768612039508298,
+            "latency_p95_ms": 74.306259964942,
+            "mean_latency_ms": 20.198658272662822,
+            "ndcg10_ci": {
+              "mean": 0.33181058721222195,
+              "low": 0.2763613028346431,
+              "high": 0.38933188870661967
+            },
+            "rerank_rate": 0.125,
+            "skip_rate": 0.875,
+            "api_cost_per_1000": 0.0,
+            "mean_latency_delta_vs_always_ms": -53.522712644189596,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.017168063948736496,
+              "low": -0.035260594546990855,
+              "high": -0.000487110580569148
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.00036481284571400415,
+              "low": -0.002644298056616697,
+              "high": 0.003844261973733565
+            },
+            "benefit_prevalence": 0.31666666666666665,
+            "benefit_auc": 0.4579589216944801,
+            "benefit_brier": 0.4755618594293442,
+            "beneficial_query_recall": 0.05263157894736842,
+            "harmful_skip_rate": 0.3,
+            "threshold": 0.9500000000000001,
+            "calibration_ndcg": 0.3428602810442838,
+            "calibration_always_ndcg": 0.3479784148157054,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 53.522712644189596
+          },
+          "decisions_fixed_0.5": {
+            "ndcg10": 0.3480759431138612,
+            "mrr10": 0.5962929894179894,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 235.17854799865745,
+            "latency_p95_ms": 367.9574063222388,
+            "mean_latency_ms": 252.38895623236508,
+            "ndcg10_ci": {
+              "mean": 0.3480759431138612,
+              "low": 0.2905306498376346,
+              "high": 0.4065019950499284
+            },
+            "rerank_rate": 0.925,
+            "skip_rate": 0.07499999999999996,
+            "api_cost_per_1000": 0.4032041666666667,
+            "mean_latency_delta_vs_always_ms": 178.66758531551264,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0009027080470973834,
+              "low": -0.0032070947296113945,
+              "high": 0.00046734123110006944
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.016630168747353118,
+              "low": -0.00011426102547267152,
+              "high": 0.03475001619495117
+            },
+            "benefit_prevalence": 0.31666666666666665,
+            "benefit_auc": 0.45474967907573816,
+            "benefit_brier": 0.3606125,
+            "beneficial_query_recall": 0.9736842105263158,
+            "harmful_skip_rate": 0.008333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.3502712598430612,
+            "calibration_always_ndcg": 0.3479784148157054,
+            "gate_mean_ms": 183.32854897501724,
+            "saved_rerank_mean_ms": 4.660963659504584
+          },
+          "decisions_calibrated": {
+            "ndcg10": 0.3297128149684974,
+            "mrr10": 0.5350231481481482,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 179.8959874722641,
+            "latency_p95_ms": 306.4938914933007,
+            "mean_latency_ms": 199.2902873059696,
+            "ndcg10_ci": {
+              "mean": 0.3297128149684974,
+              "low": 0.27432784234244345,
+              "high": 0.38627426865572395
+            },
+            "rerank_rate": 0.058333333333333334,
+            "skip_rate": 0.9416666666666667,
+            "api_cost_per_1000": 0.4032041666666667,
+            "mean_latency_delta_vs_always_ms": 125.56891638911718,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.01926583619246112,
+              "low": -0.037115309012981025,
+              "high": -0.002829363321296638
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": -0.0017329593980106195,
+              "low": -0.005198878194031859,
+              "high": 0.0
+            },
+            "benefit_prevalence": 0.31666666666666665,
+            "benefit_auc": 0.45474967907573816,
+            "benefit_brier": 0.3606125,
+            "beneficial_query_recall": 0.0,
+            "harmful_skip_rate": 0.31666666666666665,
+            "threshold": 0.8,
+            "calibration_ndcg": 0.3508477724494459,
+            "calibration_always_ndcg": 0.3479784148157054,
+            "gate_mean_ms": 183.32854897501724,
+            "saved_rerank_mean_ms": 57.75963258590006
+          },
+          "jev_fixed_0.5": {
+            "ndcg10": 0.3482500320163234,
+            "mrr10": 0.5972189153439154,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 193.16525949398056,
+            "latency_p95_ms": 283.82701021037064,
+            "mean_latency_ms": 202.04075992223807,
+            "ndcg10_ci": {
+              "mean": 0.3482500320163234,
+              "low": 0.2902567451576309,
+              "high": 0.4067638490927747
+            },
+            "rerank_rate": 0.9083333333333333,
+            "skip_rate": 0.09166666666666667,
+            "api_cost_per_1000": 0.19532870000000002,
+            "mean_latency_delta_vs_always_ms": 128.31938900538566,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0007286191446351139,
+              "low": -0.0021717592485495886,
+              "high": 0.00045388889735815583
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.01680425764981539,
+              "low": 3.0494259191222066e-07,
+              "high": 0.0348899706516806
+            },
+            "benefit_prevalence": 0.31666666666666665,
+            "benefit_auc": 0.4934210526315789,
+            "benefit_brier": 0.31093333333333334,
+            "beneficial_query_recall": 0.9210526315789473,
+            "harmful_skip_rate": 0.025,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.3510665196955481,
+            "calibration_always_ndcg": 0.3479784148157054,
+            "gate_mean_ms": 133.9720279482814,
+            "saved_rerank_mean_ms": 5.652638942895767
+          },
+          "jev_calibrated": {
+            "ndcg10": 0.331445774366508,
+            "mrr10": 0.5416898148148147,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 132.20050954259932,
+            "latency_p95_ms": 223.4865813225042,
+            "mean_latency_ms": 146.87718544640424,
+            "ndcg10_ci": {
+              "mean": 0.331445774366508,
+              "low": 0.27593550012474255,
+              "high": 0.38851694372374346
+            },
+            "rerank_rate": 0.008333333333333333,
+            "skip_rate": 0.9916666666666667,
+            "api_cost_per_1000": 0.19532870000000002,
+            "mean_latency_delta_vs_always_ms": 73.15581452955182,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.017532876794450498,
+              "low": -0.035592486225736936,
+              "high": -0.00043842592606729966
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.0,
+              "low": 0.0,
+              "high": 0.0
+            },
+            "benefit_prevalence": 0.31666666666666665,
+            "benefit_auc": 0.4934210526315789,
+            "benefit_brier": 0.31093333333333334,
+            "beneficial_query_recall": 0.0,
+            "harmful_skip_rate": 0.31666666666666665,
+            "threshold": 0.75,
+            "calibration_ndcg": 0.3468754195714552,
+            "calibration_always_ndcg": 0.3479784148157054,
+            "gate_mean_ms": 133.9720279482814,
+            "saved_rerank_mean_ms": 60.8162134187296
+          }
+        },
+        "llm": {
+          "heuristic_fixed_0.5": {
+            "ndcg10": 0.34946098603640874,
+            "mrr10": 0.5766898148148147,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 2347.101570048835,
+            "latency_p95_ms": 4926.654438517288,
+            "mean_latency_ms": 2443.1868306482406,
+            "ndcg10_ci": {
+              "mean": 0.34946098603640874,
+              "low": 0.29414590752997455,
+              "high": 0.4049409423731905
+            },
+            "rerank_rate": 0.8833333333333333,
+            "skip_rate": 0.1166666666666667,
+            "api_cost_per_1000": 1.547339166666667,
+            "mean_latency_delta_vs_always_ms": -310.35523054936976,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0013330161788509358,
+              "low": -0.005141256643531869,
+              "high": 0.002197615362242644
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.01801521166990073,
+              "low": 0.004234730510994679,
+              "high": 0.033185228268970135
+            },
+            "benefit_prevalence": 0.2916666666666667,
+            "benefit_auc": 0.4660504201680673,
+            "benefit_brier": 0.49355267923904944,
+            "beneficial_query_recall": 0.8857142857142857,
+            "harmful_skip_rate": 0.03333333333333333,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.3687626233781329,
+            "calibration_always_ndcg": 0.3713009417157941,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 310.35523054936976
+          },
+          "heuristic_calibrated": {
+            "ndcg10": 0.34532252455965473,
+            "mrr10": 0.5725231481481481,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 2174.8591185023542,
+            "latency_p95_ms": 4139.36787532293,
+            "mean_latency_ms": 2055.9409559975998,
+            "ndcg10_ci": {
+              "mean": 0.34532252455965473,
+              "low": 0.2897377006224039,
+              "high": 0.4014642506562868
+            },
+            "rerank_rate": 0.7416666666666667,
+            "skip_rate": 0.2583333333333333,
+            "api_cost_per_1000": 1.297615,
+            "mean_latency_delta_vs_always_ms": -697.6011052000104,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.005471477655604942,
+              "low": -0.014718423888637382,
+              "high": 0.0013391472325779757
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.013876750193146723,
+              "low": 0.0010968834644436744,
+              "high": 0.027019357002659256
+            },
+            "benefit_prevalence": 0.2916666666666667,
+            "benefit_auc": 0.4660504201680673,
+            "benefit_brier": 0.49355267923904944,
+            "beneficial_query_recall": 0.7428571428571429,
+            "harmful_skip_rate": 0.075,
+            "threshold": 0.7000000000000001,
+            "calibration_ndcg": 0.3622389438780645,
+            "calibration_always_ndcg": 0.3713009417157941,
+            "gate_mean_ms": 0.0,
+            "saved_rerank_mean_ms": 697.6011052000104
+          },
+          "decisions_fixed_0.5": {
+            "ndcg10": 0.3505537818905927,
+            "mrr10": 0.5787731481481481,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 2561.464027996408,
+            "latency_p95_ms": 4295.393797440918,
+            "mean_latency_ms": 2575.1081278474885,
+            "ndcg10_ci": {
+              "mean": 0.3505537818905927,
+              "low": 0.2954950570722523,
+              "high": 0.4063263729387056
+            },
+            "rerank_rate": 0.8833333333333333,
+            "skip_rate": 0.1166666666666667,
+            "api_cost_per_1000": 1.9570541666666668,
+            "mean_latency_delta_vs_always_ms": -178.43393335012175,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.00024022032466693686,
+              "low": -0.0026390329000122894,
+              "high": 0.0020602465227695945
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.019108007524084727,
+              "low": 0.004977872160780873,
+              "high": 0.03480828706370151
+            },
+            "benefit_prevalence": 0.2916666666666667,
+            "benefit_auc": 0.4922689075630252,
+            "benefit_brier": 0.34886749999999994,
+            "beneficial_query_recall": 0.9428571428571428,
+            "harmful_skip_rate": 0.016666666666666666,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.3710169640593472,
+            "calibration_always_ndcg": 0.3713009417157941,
+            "gate_mean_ms": 183.32854897501724,
+            "saved_rerank_mean_ms": 361.762482325139
+          },
+          "decisions_calibrated": {
+            "ndcg10": 0.350411472956851,
+            "mrr10": 0.572662037037037,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 2334.0150939766318,
+            "latency_p95_ms": 4114.131962822285,
+            "mean_latency_ms": 2115.6726282647774,
+            "ndcg10_ci": {
+              "mean": 0.350411472956851,
+              "low": 0.2950391792000528,
+              "high": 0.40609838993352226
+            },
+            "rerank_rate": 0.7166666666666667,
+            "skip_rate": 0.2833333333333333,
+            "api_cost_per_1000": 1.6616483333333334,
+            "mean_latency_delta_vs_always_ms": -637.8694329328331,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0003825292584086521,
+              "low": -0.00626680536826839,
+              "high": 0.005395335938017264
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.018965698590343014,
+              "low": 0.005769255131170098,
+              "high": 0.03351547187646164
+            },
+            "benefit_prevalence": 0.2916666666666667,
+            "benefit_auc": 0.4922689075630252,
+            "benefit_brier": 0.34886749999999994,
+            "beneficial_query_recall": 0.7714285714285715,
+            "harmful_skip_rate": 0.06666666666666667,
+            "threshold": 0.6000000000000001,
+            "calibration_ndcg": 0.363947035039641,
+            "calibration_always_ndcg": 0.3713009417157941,
+            "gate_mean_ms": 183.32854897501724,
+            "saved_rerank_mean_ms": 821.1979819078502
+          },
+          "jev_fixed_0.5": {
+            "ndcg10": 0.34959757672493574,
+            "mrr10": 0.5808564814814814,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 2460.5689200689085,
+            "latency_p95_ms": 5048.1303814420235,
+            "mean_latency_ms": 2604.1239031217024,
+            "ndcg10_ci": {
+              "mean": 0.34959757672493574,
+              "low": 0.29430192760716906,
+              "high": 0.40523745183108567
+            },
+            "rerank_rate": 0.8833333333333333,
+            "skip_rate": 0.1166666666666667,
+            "api_cost_per_1000": 1.7411803666666668,
+            "mean_latency_delta_vs_always_ms": -149.41815807590805,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.0011964254903239124,
+              "low": -0.003511153173225176,
+              "high": 0.0008125658466127566
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.01815180235842775,
+              "low": 0.0040891071066355405,
+              "high": 0.033845697801271314
+            },
+            "benefit_prevalence": 0.2916666666666667,
+            "benefit_auc": 0.499327731092437,
+            "benefit_brier": 0.3307633333333333,
+            "beneficial_query_recall": 0.9142857142857143,
+            "harmful_skip_rate": 0.025,
+            "threshold": 0.5,
+            "calibration_ndcg": 0.37103847756595754,
+            "calibration_always_ndcg": 0.3713009417157941,
+            "gate_mean_ms": 133.9720279482814,
+            "saved_rerank_mean_ms": 283.39018602418946
+          },
+          "jev_calibrated": {
+            "ndcg10": 0.344569371535472,
+            "mrr10": 0.5721064814814815,
+            "recall50": 0.24432201917614135,
+            "recall100": 0.2840079388950448,
+            "n": 120,
+            "latency_p50_ms": 1940.1865240652114,
+            "latency_p95_ms": 3620.0974813080384,
+            "mean_latency_ms": 1528.1505063544803,
+            "ndcg10_ci": {
+              "mean": 0.344569371535472,
+              "low": 0.28997745800342334,
+              "high": 0.3998111693178231
+            },
+            "rerank_rate": 0.525,
+            "skip_rate": 0.475,
+            "api_cost_per_1000": 1.1184520333333334,
+            "mean_latency_delta_vs_always_ms": -1225.3915548431298,
+            "mean_quality_delta_vs_always": {
+              "mean": -0.006224630679787626,
+              "low": -0.013011589875685847,
+              "high": 0.0004740052968339571
+            },
+            "mean_quality_delta_vs_hybrid": {
+              "mean": 0.013123597168964043,
+              "low": 0.0005397704825673766,
+              "high": 0.027842419433823064
+            },
+            "benefit_prevalence": 0.2916666666666667,
+            "benefit_auc": 0.499327731092437,
+            "benefit_brier": 0.3307633333333333,
+            "beneficial_query_recall": 0.4857142857142857,
+            "harmful_skip_rate": 0.15,
+            "threshold": 0.65,
+            "calibration_ndcg": 0.36374892688466076,
+            "calibration_always_ndcg": 0.3713009417157941,
+            "gate_mean_ms": 133.9720279482814,
+            "saved_rerank_mean_ms": 1359.3635827914113
+          }
+        }
+      },
+      "gate_curves": {
+        "cross_encoder": {
+          "heuristic": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.72137091685242
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.72137091685242
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.72137091685242
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.72137091685242
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.20636542475161
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.20636542475161
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 73.20636542475161
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.05,
+              "ndcg10": 0.35109991784127714,
+              "mean_latency_ms": 70.615560207807
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.05,
+              "ndcg10": 0.35109991784127714,
+              "mean_latency_ms": 70.615560207807
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.05,
+              "ndcg10": 0.35109991784127714,
+              "mean_latency_ms": 70.615560207807
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.35202431669033063,
+              "mean_latency_ms": 66.43642096605618
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.35202431669033063,
+              "mean_latency_ms": 66.43642096605618
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.20833333333333334,
+              "ndcg10": 0.347263950680885,
+              "mean_latency_ms": 60.67181730807837
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.20833333333333334,
+              "ndcg10": 0.347263950680885,
+              "mean_latency_ms": 60.67181730807837
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.25833333333333336,
+              "ndcg10": 0.3451426879394783,
+              "mean_latency_ms": 57.65030618252543
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.25833333333333336,
+              "ndcg10": 0.3451426879394783,
+              "mean_latency_ms": 57.65030618252543
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.39166666666666666,
+              "ndcg10": 0.3360982899465674,
+              "mean_latency_ms": 49.52603224034343
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 0.5333333333333333,
+              "ndcg10": 0.33143493736012164,
+              "mean_latency_ms": 40.94189977283046
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 0.675,
+              "ndcg10": 0.3345146001521529,
+              "mean_latency_ms": 32.320243663950045
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 0.875,
+              "ndcg10": 0.33181058721222195,
+              "mean_latency_ms": 20.198658272662822
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 0.875,
+              "ndcg10": 0.33181058721222195,
+              "mean_latency_ms": 20.198658272662822
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 12.433378939749673
+            }
+          ],
+          "decisions": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 257.04991989186965
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 257.04991989186965
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 257.04991989186965
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 257.04991989186965
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 257.04991989186965
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 257.04991989186965
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 256.53491439976887
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.025,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 255.49011309146104
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.03333333333333333,
+              "ndcg10": 0.34921232177650857,
+              "mean_latency_ms": 254.96906840805119
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.06666666666666667,
+              "ndcg10": 0.3482250343974856,
+              "mean_latency_ms": 252.90820721614486
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.075,
+              "ndcg10": 0.3480759431138612,
+              "mean_latency_ms": 252.38895623236508
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.1,
+              "ndcg10": 0.346618567195672,
+              "mean_latency_ms": 250.8248449070379
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.13333333333333333,
+              "ndcg10": 0.34586681769467176,
+              "mean_latency_ms": 248.88069478183752
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.18333333333333332,
+              "ndcg10": 0.34685813440313873,
+              "mean_latency_ms": 245.82421662295624
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.4166666666666667,
+              "ndcg10": 0.3383126830692909,
+              "mean_latency_ms": 231.57404122369675
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.7333333333333333,
+              "ndcg10": 0.33390822794980923,
+              "mean_latency_ms": 212.07007699558744
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.9416666666666667,
+              "ndcg10": 0.3297128149684974,
+              "mean_latency_ms": 199.2902873059696
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            }
+          ],
+          "jev": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.0,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.69339886513384
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.34897865116095855,
+              "mean_latency_ms": 207.16487425670493
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.03333333333333333,
+              "ndcg10": 0.3493489059047659,
+              "mean_latency_ms": 205.61593058082508
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.09166666666666666,
+              "ndcg10": 0.3482500320163234,
+              "mean_latency_ms": 202.04075992223807
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.175,
+              "ndcg10": 0.3440731646249998,
+              "mean_latency_ms": 196.8892793142004
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.31666666666666665,
+              "ndcg10": 0.3453123046373043,
+              "mean_latency_ms": 188.00902355627235
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.5916666666666667,
+              "ndcg10": 0.3370353816348126,
+              "mean_latency_ms": 171.376505655644
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.9416666666666667,
+              "ndcg10": 0.3335587706142744,
+              "mean_latency_ms": 149.84347119704276
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.9916666666666667,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.87718544640424
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            }
+          ]
+        },
+        "llm": {
+          "heuristic": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2753.54206119761
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2753.54206119761
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2753.54206119761
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2753.54206119761
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2730.775779231044
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2730.775779231044
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2730.775779231044
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.05,
+              "ndcg10": 0.3514080551243836,
+              "mean_latency_ms": 2619.5706116394526
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.05,
+              "ndcg10": 0.3514080551243836,
+              "mean_latency_ms": 2619.5706116394526
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.05,
+              "ndcg10": 0.3514080551243836,
+              "mean_latency_ms": 2619.5706116394526
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.34946098603640874,
+              "mean_latency_ms": 2443.1868306482406
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.34946098603640874,
+              "mean_latency_ms": 2443.1868306482406
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.20833333333333334,
+              "ndcg10": 0.34513859362580834,
+              "mean_latency_ms": 2162.2206502303015
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.20833333333333334,
+              "ndcg10": 0.34513859362580834,
+              "mean_latency_ms": 2162.2206502303015
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.25833333333333336,
+              "ndcg10": 0.34532252455965473,
+              "mean_latency_ms": 2055.9409559975998
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.25833333333333336,
+              "ndcg10": 0.34532252455965473,
+              "mean_latency_ms": 2055.9409559975998
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.39166666666666666,
+              "ndcg10": 0.34601856050869356,
+              "mean_latency_ms": 1682.2047928648924
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 0.5333333333333333,
+              "ndcg10": 0.34171917626789133,
+              "mean_latency_ms": 1296.6851565647328
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 0.675,
+              "ndcg10": 0.34093074430299297,
+              "mean_latency_ms": 886.0196471985546
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 0.875,
+              "ndcg10": 0.33486679428956007,
+              "mean_latency_ms": 307.42856834889
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 0.875,
+              "ndcg10": 0.33486679428956007,
+              "mean_latency_ms": 307.42856834889
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 12.433378939749673
+            }
+          ],
+          "decisions": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2936.8706101726275
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2936.8706101726275
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2936.8706101726275
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2936.8706101726275
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2936.8706101726275
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2914.1043282060614
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2896.3076292396486
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.025,
+              "ndcg10": 0.35138038252244214,
+              "mean_latency_ms": 2841.401673197591
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.05,
+              "ndcg10": 0.3513319622412936,
+              "mean_latency_ms": 2784.1531902556503
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.058333333333333334,
+              "ndcg10": 0.3513319622412936,
+              "mean_latency_ms": 2764.20168485541
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.3505537818905927,
+              "mean_latency_ms": 2575.1081278474885
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.15,
+              "ndcg10": 0.3505657864508361,
+              "mean_latency_ms": 2454.1036566307107
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.2833333333333333,
+              "ndcg10": 0.350411472956851,
+              "mean_latency_ms": 2115.6726282647774
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.36666666666666664,
+              "ndcg10": 0.3489277587780526,
+              "mean_latency_ms": 1900.91393552284
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.5583333333333333,
+              "ndcg10": 0.3491227564577501,
+              "mean_latency_ms": 1401.959167640113
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.7666666666666667,
+              "ndcg10": 0.3347431995063808,
+              "mean_latency_ms": 828.6091805139828
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.9583333333333334,
+              "ndcg10": 0.3321226853867124,
+              "mean_latency_ms": 330.31598783951875
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 195.76192791476691
+            }
+          ],
+          "jev": [
+            {
+              "threshold": 0.0,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.05,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.1,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.15000000000000002,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.2,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.25,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.30000000000000004,
+              "skip_rate": 0.0,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2887.514089145892
+            },
+            {
+              "threshold": 0.35000000000000003,
+              "skip_rate": 0.008333333333333333,
+              "ndcg10": 0.3507940022152597,
+              "mean_latency_ms": 2869.717390179479
+            },
+            {
+              "threshold": 0.4,
+              "skip_rate": 0.016666666666666666,
+              "ndcg10": 0.3501406833071041,
+              "mean_latency_ms": 2849.1207092796685
+            },
+            {
+              "threshold": 0.45,
+              "skip_rate": 0.041666666666666664,
+              "ndcg10": 0.3506708565420953,
+              "mean_latency_ms": 2778.545266363168
+            },
+            {
+              "threshold": 0.5,
+              "skip_rate": 0.11666666666666667,
+              "ndcg10": 0.34959757672493574,
+              "mean_latency_ms": 2604.1239031217024
+            },
+            {
+              "threshold": 0.55,
+              "skip_rate": 0.16666666666666666,
+              "ndcg10": 0.3508115441721006,
+              "mean_latency_ms": 2490.8891953794714
+            },
+            {
+              "threshold": 0.6000000000000001,
+              "skip_rate": 0.26666666666666666,
+              "ndcg10": 0.3487097799298385,
+              "mean_latency_ms": 2100.481500469808
+            },
+            {
+              "threshold": 0.65,
+              "skip_rate": 0.475,
+              "ndcg10": 0.344569371535472,
+              "mean_latency_ms": 1528.1505063544803
+            },
+            {
+              "threshold": 0.7000000000000001,
+              "skip_rate": 0.7833333333333333,
+              "ndcg10": 0.33759258593015784,
+              "mean_latency_ms": 660.5660054536808
+            },
+            {
+              "threshold": 0.75,
+              "skip_rate": 0.9333333333333333,
+              "ndcg10": 0.33380429869511713,
+              "mean_latency_ms": 295.8182613137372
+            },
+            {
+              "threshold": 0.8,
+              "skip_rate": 0.9916666666666667,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 158.8221613880402
+            },
+            {
+              "threshold": 0.8500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 0.9,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 0.9500000000000001,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 1.0,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            },
+            {
+              "threshold": 1.01,
+              "skip_rate": 1.0,
+              "ndcg10": 0.331445774366508,
+              "mean_latency_ms": 146.40540688803108
+            }
+          ]
+        }
+      },
+      "paired_differences": {
+        "bm25 - dense": {
+          "mean": 0.002951100318901189,
+          "low": -0.020242088546511012,
+          "high": 0.024466668229477954
+        },
+        "bm25 - hybrid": {
+          "mean": -0.01804888512120427,
+          "low": -0.030861235254206566,
+          "high": -0.005392166980700178
+        },
+        "bm25 - ce_tinybert": {
+          "mean": -0.025036617914898144,
+          "low": -0.04376616174376205,
+          "high": -0.0079778471359308
+        },
+        "bm25 - ce_minilm": {
+          "mean": -0.03558176191565477,
+          "low": -0.05800923887768908,
+          "high": -0.015086549562794776
+        },
+        "bm25 - decisions": {
+          "mean": -0.0480986587471273,
+          "low": -0.0786139028695161,
+          "high": -0.019400356628323973
+        },
+        "bm25 - jev": {
+          "mean": -0.08478891287974971,
+          "low": -0.11470959821893406,
+          "high": -0.057546839190908736
+        },
+        "bm25 - llm": {
+          "mean": -0.03739711296995593,
+          "low": -0.05482844204171673,
+          "high": -0.021051958481751162
+        },
+        "dense - hybrid": {
+          "mean": -0.02099998544010546,
+          "low": -0.03709222924090341,
+          "high": -0.004799360814516538
+        },
+        "dense - ce_tinybert": {
+          "mean": -0.02798771823379933,
+          "low": -0.04870376558183647,
+          "high": -0.007368231169266657
+        },
+        "dense - ce_minilm": {
+          "mean": -0.03853286223455596,
+          "low": -0.06031903032371134,
+          "high": -0.01837230863974306
+        },
+        "dense - decisions": {
+          "mean": -0.05104975906602849,
+          "low": -0.08111430208413943,
+          "high": -0.01980284005332407
+        },
+        "dense - jev": {
+          "mean": -0.0877400131986509,
+          "low": -0.11693851870295664,
+          "high": -0.05946933062381383
+        },
+        "dense - llm": {
+          "mean": -0.040348213288857133,
+          "low": -0.05898492012302765,
+          "high": -0.021940240037513773
+        },
+        "hybrid - ce_tinybert": {
+          "mean": -0.006987732793693872,
+          "low": -0.023505873782347895,
+          "high": 0.008832496379826832
+        },
+        "hybrid - ce_minilm": {
+          "mean": -0.017532876794450498,
+          "low": -0.035592486225736936,
+          "high": -0.00043842592606729966
+        },
+        "hybrid - decisions": {
+          "mean": -0.030049773625923027,
+          "low": -0.05884367825926403,
+          "high": -0.0019982944991259488
+        },
+        "hybrid - jev": {
+          "mean": -0.06674002775854544,
+          "low": -0.09403196204309112,
+          "high": -0.04016314043251315
+        },
+        "hybrid - llm": {
+          "mean": -0.019348227848751665,
+          "low": -0.034842823661929506,
+          "high": -0.005050910446019794
+        },
+        "ce_tinybert - ce_minilm": {
+          "mean": -0.01054514400075663,
+          "low": -0.026897743166345165,
+          "high": 0.004615624263395343
+        },
+        "ce_tinybert - decisions": {
+          "mean": -0.023062040832229156,
+          "low": -0.05518719225713714,
+          "high": 0.008899667029725757
+        },
+        "ce_tinybert - jev": {
+          "mean": -0.059752294964851564,
+          "low": -0.0876755579524066,
+          "high": -0.03285107695129781
+        },
+        "ce_tinybert - llm": {
+          "mean": -0.012360495055057796,
+          "low": -0.032843172115075606,
+          "high": 0.007552675920478148
+        },
+        "ce_minilm - decisions": {
+          "mean": -0.012516896831472528,
+          "low": -0.04189611390819398,
+          "high": 0.016786696118069603
+        },
+        "ce_minilm - jev": {
+          "mean": -0.049207150964094934,
+          "low": -0.07553093852128107,
+          "high": -0.024180152709104907
+        },
+        "ce_minilm - llm": {
+          "mean": -0.0018153510543011675,
+          "low": -0.022444838812531183,
+          "high": 0.018520525899380944
+        },
+        "decisions - jev": {
+          "mean": -0.036690254132622405,
+          "low": -0.05612457868997332,
+          "high": -0.018520381533374285
+        },
+        "decisions - llm": {
+          "mean": 0.010701545777171364,
+          "low": -0.014896707070941139,
+          "high": 0.037072096339781445
+        },
+        "jev - llm": {
+          "mean": 0.04739179990979377,
+          "low": 0.025798121243412395,
+          "high": 0.07058268107601626
+        }
+      },
+      "oracle_cross_encoder": 0.3683469224751819,
+      "rerank_effect_cross_encoder": {
+        "improves": 42,
+        "ties": 52,
+        "hurts": 26
+      },
+      "oracle_llm": 0.36360830523006954,
+      "rerank_effect_llm": {
+        "improves": 39,
+        "ties": 64,
+        "hurts": 17
+      }
+    }
+  },
+  "reliability": {
+    "scifact": {
+      "api_decisions_gate": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 0,
+        "input_tokens_successful_final_attempt": 839061,
+        "output_tokens_successful_final_attempt": 0
+      },
+      "api_decisions_rerank": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 7,
+        "input_tokens_successful_final_attempt": 5240023,
+        "output_tokens_successful_final_attempt": 0
+      },
+      "api_jev_gate": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 0,
+        "input_tokens_successful_final_attempt": 973367,
+        "output_tokens_successful_final_attempt": 7600
+      },
+      "api_jev_rerank": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 2,
+        "input_tokens_successful_final_attempt": 4839008,
+        "output_tokens_successful_final_attempt": 160800
+      },
+      "api_llm_rerank": {
+        "queries": 200,
+        "failed_queries": 1,
+        "extra_attempts_in_saved_queries": 3,
+        "input_tokens_successful_final_attempt": 3213783,
+        "output_tokens_successful_final_attempt": 36700
+      }
+    },
+    "nfcorpus": {
+      "api_decisions_gate": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 0,
+        "input_tokens_successful_final_attempt": 806505,
+        "output_tokens_successful_final_attempt": 0
+      },
+      "api_decisions_rerank": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 0,
+        "input_tokens_successful_final_attempt": 5305659,
+        "output_tokens_successful_final_attempt": 0
+      },
+      "api_jev_gate": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 0,
+        "input_tokens_successful_final_attempt": 930307,
+        "output_tokens_successful_final_attempt": 7600
+      },
+      "api_jev_rerank": {
+        "queries": 200,
+        "failed_queries": 0,
+        "extra_attempts_in_saved_queries": 1,
+        "input_tokens_successful_final_attempt": 4883260,
+        "output_tokens_successful_final_attempt": 160800
+      },
+      "api_llm_rerank": {
+        "queries": 200,
+        "failed_queries": 5,
+        "extra_attempts_in_saved_queries": 8,
+        "input_tokens_successful_final_attempt": 3220151,
+        "output_tokens_successful_final_attempt": 31592
+      }
+    }
+  },
+  "invalid_response_artifacts": 11,
+  "api_spend_usd": 2.427844458,
+  "api_requests": 2026,
+  "api_http_statuses": {
+    "200": 2005,
+    "400": 7,
+    "429": 11,
+    "None": 3
+  }
+}

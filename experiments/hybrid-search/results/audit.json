@@ -1,0 +1,70 @@
+{
+  "datasets": {
+    "scifact": {
+      "corpus_size": 5183,
+      "dataset_provenance": {
+        "source": "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip",
+        "md5": "5f7d1de60b170fc8027bb7898e2efca1",
+        "sha256": "536e14446a0ba56ed1398ab1055f39fe852686ecad24a6306c80c490fa8e0165"
+      },
+      "calibration_queries": 80,
+      "test_queries": 300,
+      "paired_api_test_queries": 120,
+      "calibration_test_id_overlap": 0,
+      "calibration_test_text_overlap": 0,
+      "observed_models": {
+        "decisions": [
+          "gpt-6-luna"
+        ],
+        "jev": [
+          "jev-1.14.0"
+        ],
+        "llm": [
+          "gpt-6-luna"
+        ]
+      }
+    },
+    "nfcorpus": {
+      "corpus_size": 3633,
+      "dataset_provenance": {
+        "source": "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/nfcorpus.zip",
+        "md5": "a89dba18a62ef92f7d323ec890a0d38d",
+        "sha256": "efe5be03f8c5b86a5870102d0599d227c8c6e2484328e68c6522560385671b0b"
+      },
+      "calibration_queries": 80,
+      "test_queries": 323,
+      "paired_api_test_queries": 120,
+      "calibration_test_id_overlap": 0,
+      "calibration_test_text_overlap": 0,
+      "observed_models": {
+        "decisions": [
+          "gpt-6-luna"
+        ],
+        "jev": [
+          "jev-1.14.0"
+        ],
+        "llm": [
+          "gpt-6-luna"
+        ]
+      }
+    }
+  },
+  "source_sha256": {
+    "searchbench/__init__.py": "ce65dcd6b5f7525bdadd824f50a941080be75e2f8140070188dbaef2b75fcbcb",
+    "searchbench/api.py": "5879788a81cbdc6fbc15565a029b5fd349e1097de54f99c6bc9f73f1ad86336a",
+    "searchbench/audit.py": "9a49a22e41581879b6960b253a606a1daf841cd1a715c84e862e225eaa4bc305",
+    "searchbench/data.py": "317c7fde159de75fab33b78a7b38bfa69609ae05f862cc172cdbc16625c93bb3",
+    "searchbench/figures.py": "a4ce308bf44784ec6feea8311db279fce4d5abe9ee2f00b68b4ffdcf71d86d17",
+    "searchbench/local.py": "85c2769d2bd2541f1046fb9e0c24d9087d6ddcdc67ddfc52c74f114a45a0145f",
+    "searchbench/metrics.py": "5bd3aca188a11b527548a5d0deee946b93b3f9423ee3580f7322f143172114d5",
+    "searchbench/package.py": "bb6390f249898bc34eb257916838c65c10f6cfb8d897331b3c890322ac5c7bec",
+    "searchbench/render_blog.py": "19a20ba0c39d0d3d997b4a31fb59e510477974318e8ee749d4ff362238fc9a75",
+    "searchbench/report.py": "0585bb5962f0dee225d487efaa75cbbe4b5ef70ea874dee46e2c073019ff6985",
+    "config.json": "2bd928358823a657d310ceec3d5033d119e3acfa5e786820ee217f2472352234",
+    "uv.lock": "b094be3cb4c22a4246d04001bcca2baace79706d17e647480416341c68db56be",
+    "models.lock.json": "5a7ae6c4a95bfae7135e74748779d592f14a054fb8419e86cbd8adb7bdb08e23",
+    "EXPERIMENT_PROTOCOL.md": "19847de21bd106418e435ce85cc2e1fdeb19940c49a25adc4c4bfdb896ae8cca"
+  },
+  "estimated_api_spend_usd": 2.427844458,
+  "checks_passed": true
+}

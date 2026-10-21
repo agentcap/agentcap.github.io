@@ -1,0 +1,324 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>When reranking pays off in hybrid search</title><meta name='description' content='A measured BEIR comparison of hybrid search, cross-encoders, GPT-6 Luna, Jev, Decisions API, and selective reranking.'><style>
+:root{color-scheme:light;--paper:#fcfaf6;--ink:#25221f;--muted:#746b62;--line:#dfd8cd;--accent:#bd4c23}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.75 Georgia,'Times New Roman',serif}
+.shell{max-width:940px;margin:auto;padding:0 44px}header{font:12px/1.5 system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;padding:30px 0;border-bottom:1px solid var(--line)}
+header .right{float:right}a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}header a{color:var(--muted)}
+article{padding:54px 0 72px}h1,h2,h3{font-family:system-ui,sans-serif;letter-spacing:-.035em;line-height:1.14}h1{font-size:clamp(36px,5vw,60px);font-weight:750;margin:0 0 24px}h2{font-size:30px;margin:58px 0 20px}h3{font-size:23px;margin:35px 0 16px}
+article>p:first-of-type{font-size:23px;line-height:1.5;color:#5b5148;margin-bottom:36px}p{margin:20px 0}strong{font-weight:700}img{display:block;width:100%;height:auto;margin:32px auto 12px}
+.table-wrap{overflow-x:auto;margin:28px -8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font:13px/1.5 system-ui,sans-serif;font-variant-numeric:tabular-nums}th{text-align:left;font-weight:650;color:#5b5148;white-space:nowrap}td,th{padding:12px 9px;border-bottom:1px solid #e9e3d9}tr:last-child td{border:0}thead{background:#f1ece3}td:not(:first-child){white-space:nowrap}
+blockquote{border-left:3px solid var(--accent);padding:1px 24px;margin:28px 0;color:#5b5148;background:#f5efe5}
+code{font: .8em ui-monospace,Consolas,monospace;background:#f0ebe2;padding:.1em .3em;border-radius:3px}pre{overflow:auto;padding:22px;background:#2b2723;color:#f4ece0;line-height:1.6;border-radius:6px}pre code{background:none;padding:0}li{margin:8px 0}hr{border:0;border-top:1px solid var(--line);margin:44px 0}
+footer{font:13px/1.6 system-ui,sans-serif;border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted)}.skip{position:absolute;left:-10000px}.skip:focus{left:20px;top:10px;background:white;padding:10px}
+@media(max-width:640px){.shell{padding:0 22px}header .right{float:none;display:block;margin-top:10px}article{padding-top:32px}body{font-size:17px}h2{font-size:26px;margin-top:42px}article>p:first-of-type{font-size:21px}td,th{padding:10px 8px}blockquote{padding-left:16px}}
+@media print{body{font-size:11pt}header .right{display:none}article{padding:20px 0}h1{font-size:30pt}h2{break-after:avoid}img,table{break-inside:avoid}.shell{max-width:none;padding:0}a{color:inherit}}
+</style></head><body><a class='skip' href='#article'>Skip to article</a><div class='shell'><header>Research notes / Search systems<span class='right'><a href='hybrid-search-reranking.md'>Markdown version</a> · October 21, 2026</span></header><main><article id='article'><h1>When reranking pays off in hybrid search</h1>
+<p>A measured comparison of two cross-encoders, GPT-6 Luna, Jev 1.14, and OpenAI Decisions—with a second experiment on deciding when to skip reranking.</p>
+<p>I wanted to answer two questions about the same search pipeline: which reranker improves the results, and whether an extra model call can tell me when reranking is worth doing. I built a full-corpus hybrid retriever, held its candidates fixed, and measured relevance, latency, and API usage.</p>
+<p>Jev produced the highest mean nDCG@10 on both API samples. The routing result depended on the downstream reranker: calibrated API gates reduced estimated GPT latency, but slowed every MiniLM pipeline I tested. Skipping work and improving a search system turned out to require separate checks.</p>
+<h2 tabindex='-1'>The search pipeline</h2>
+<p>I used the BEIR versions of <a href="https://github.com/allenai/scifact">SciFact</a>, which retrieves evidence for scientific claims, and <a href="https://www.cl.uni-heidelberg.de/statnlpgroup/nfcorpus/">NFCorpus</a>, which retrieves medical literature for nutrition-related information needs. The corpus sizes below refer to the <a href="https://github.com/beir-cellar/beir">BEIR distributions</a>, rather than the original NFCorpus release.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th style="text-align:right">Documents</th>
+<th style="text-align:right">Full local test</th>
+<th style="text-align:right">Paired API test</th>
+<th style="text-align:right">Separate calibration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SciFact</td>
+<td style="text-align:right">5,183</td>
+<td style="text-align:right">300</td>
+<td style="text-align:right">120</td>
+<td style="text-align:right">80 from train</td>
+</tr>
+<tr>
+<td>NFCorpus</td>
+<td style="text-align:right">3,633</td>
+<td style="text-align:right">323</td>
+<td style="text-align:right">120</td>
+<td style="text-align:right">80 from dev</td>
+</tr>
+</tbody>
+</table></div>
+<p>The API samples and calibration queries were selected by a fixed hash ordering with seed <code>20261021</code>. Calibration and test sets share neither query IDs nor normalized query text. The local baselines cover all 623 official test queries; comparisons involving APIs use the same 120 test queries within each dataset.</p>
+<p>The first stage combines BM25 with <code>intfloat/e5-small-v2</code>. BM25 uses English stemming, <code>k1=1.2</code>, and <code>b=0.75</code>; E5 uses normalized embeddings and exact cosine search over the complete corpus, with its documented <a href="https://huggingface.co/intfloat/e5-small-v2">query and passage prefixes</a>. I merge each retriever's top 100 using equal-weight reciprocal rank fusion:</p>
+<p><code>RRF(document) = sum(1 / (60 + rank_in_retriever))</code></p>
+<p>A document contributes only through retrievers that returned it. Each reranker reorders the first 50 hybrid candidates and preserves the remaining hybrid tail through rank 100. Every reranker receives the same candidates and excerpts: at most 384 MiniLM WordPiece tokens per passage and 96 per query. This isolates ordering improvements from changes to retrieval.</p>
+<p>I compared <code>cross-encoder/ms-marco-TinyBERT-L2-v2</code>, <code>cross-encoder/ms-marco-MiniLM-L6-v2</code>, GPT-6 Luna through Responses, Jev <code>jev-1.14.0</code>, and GPT-6 Luna through Decisions. The two cross-encoders are small, established MS MARCO baselines; they do not represent the strongest available cross-encoder family.</p>
+<p>All three APIs use the same four-level relevance rubric: unrelated, topically related, partially relevant, and highly relevant. Evidence that refutes a scientific claim counts as relevant. <a href="https://developers.openai.com/api/docs/guides/decisions">Decisions</a> and <a href="https://docs.typesafe.ai/api/system-one">Jev</a> receive one score question per candidate and return expected rubric scores. GPT receives all 50 passages in one structured-output request, with reasoning disabled, and returns numeric scores. That shared GPT context is a real difference in request design. Stable hybrid order breaks tied scores.</p>
+<h2 tabindex='-1'>What improved relevance?</h2>
+<p>The primary measure is TREC-style linear-gain nDCG@10: higher scores mean that more relevant documents appear closer to the top. This table uses only the paired 120-query samples.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align:right">SciFact nDCG@10</th>
+<th style="text-align:right">NFCorpus nDCG@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BM25</td>
+<td style="text-align:right">0.6751</td>
+<td style="text-align:right">0.3134</td>
+</tr>
+<tr>
+<td>E5 dense</td>
+<td style="text-align:right">0.6755</td>
+<td style="text-align:right">0.3104</td>
+</tr>
+<tr>
+<td>Hybrid RRF</td>
+<td style="text-align:right">0.7366</td>
+<td style="text-align:right">0.3314</td>
+</tr>
+<tr>
+<td>TinyBERT cross-encoder</td>
+<td style="text-align:right">0.6794</td>
+<td style="text-align:right">0.3384</td>
+</tr>
+<tr>
+<td>MiniLM cross-encoder</td>
+<td style="text-align:right">0.6960</td>
+<td style="text-align:right">0.3490</td>
+</tr>
+<tr>
+<td>Decisions API</td>
+<td style="text-align:right">0.7707</td>
+<td style="text-align:right">0.3615</td>
+</tr>
+<tr>
+<td>Jev 1.14</td>
+<td style="text-align:right">0.7986</td>
+<td style="text-align:right">0.3982</td>
+</tr>
+<tr>
+<td>GPT-6 Luna</td>
+<td style="text-align:right">0.7723</td>
+<td style="text-align:right">0.3508</td>
+</tr>
+</tbody>
+</table></div>
+<p><img src="assets/ranking-quality.png" alt="nDCG@10 for all retrieval baselines and rerankers on the same paired queries." /></p>
+<p>Jev improved on hybrid by 0.0621 nDCG on SciFact and 0.0667 on NFCorpus. Its advantage over GPT was less certain on SciFact: the paired difference was +0.0263 [-0.0158, 0.0703]. On NFCorpus, that difference was +0.0474 [0.0258, 0.0706]. The point-estimate ordering is clearer than a claim that the same winner will hold on another task.</p>
+<p>MiniLM lowered SciFact's mean score while improving NFCorpus's. The same fast reranker therefore had different value after the same retrieval architecture. A relevance benchmark belongs before an unconditional reranking decision.</p>
+<p>For context, these are the full-test local results. They are separate from the API sample table.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align:right">SciFact · 300 queries</th>
+<th style="text-align:right">NFCorpus · 323 queries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BM25</td>
+<td style="text-align:right">0.6765</td>
+<td style="text-align:right">0.3200</td>
+</tr>
+<tr>
+<td>E5 dense</td>
+<td style="text-align:right">0.6875</td>
+<td style="text-align:right">0.3255</td>
+</tr>
+<tr>
+<td>Hybrid RRF</td>
+<td style="text-align:right">0.7258</td>
+<td style="text-align:right">0.3461</td>
+</tr>
+<tr>
+<td>TinyBERT cross-encoder</td>
+<td style="text-align:right">0.6684</td>
+<td style="text-align:right">0.3368</td>
+</tr>
+<tr>
+<td>MiniLM cross-encoder</td>
+<td style="text-align:right">0.6968</td>
+<td style="text-align:right">0.3565</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hybrid Recall@50 was 0.9417 on the SciFact sample and 0.2443 on NFCorpus. Every reranker has the same Recall@50 here by construction. Reordering the shortlist cannot recover a relevant document outside it; NFCorpus leaves substantial room for improving retrieval itself.</p>
+<p>The full measurements also include MRR@10 and Recall@50/100. Unjudged documents count as zero relevance. Confidence intervals come from 5,000 paired query-bootstrap resamples; they are exploratory intervals without a multiple-comparison adjustment.</p>
+<h2 tabindex='-1'>Latency and token cost changed the ranking</h2>
+<p>I ran the local models warm on an RTX 4070 and measured each API request at concurrency two. The table includes retrieval plus the final HTTP request duration, including an error response when fallback was used. Benchmark pacing, earlier failed attempts, and retry backoff are excluded; operational failures are reported below.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align:right">SciFact p50 / p95 ms</th>
+<th style="text-align:right">NFCorpus p50 / p95 ms</th>
+<th style="text-align:right">API USD / 1,000 queries · Sci / NF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hybrid RRF</td>
+<td style="text-align:right">29 / 39</td>
+<td style="text-align:right">12 / 20</td>
+<td style="text-align:right">0.000 / 0.000</td>
+</tr>
+<tr>
+<td>TinyBERT cross-encoder</td>
+<td style="text-align:right">47 / 57</td>
+<td style="text-align:right">29 / 37</td>
+<td style="text-align:right">0.000 / 0.000</td>
+</tr>
+<tr>
+<td>MiniLM cross-encoder</td>
+<td style="text-align:right">92 / 105</td>
+<td style="text-align:right">74 / 82</td>
+<td style="text-align:right">0.000 / 0.000</td>
+</tr>
+<tr>
+<td>Decisions API</td>
+<td style="text-align:right">309 / 418</td>
+<td style="text-align:right">302 / 639</td>
+<td style="text-align:right">2.618 / 2.645</td>
+</tr>
+<tr>
+<td>Jev 1.14</td>
+<td style="text-align:right">239 / 560</td>
+<td style="text-align:right">217 / 285</td>
+<td style="text-align:right">1.015 / 1.022</td>
+</tr>
+<tr>
+<td>GPT-6 Luna</td>
+<td style="text-align:right">2477 / 5881</td>
+<td style="text-align:right">2466 / 4927</td>
+<td style="text-align:right">1.714 / 1.755</td>
+</tr>
+</tbody>
+</table></div>
+<p><img src="assets/quality-latency.png" alt="Relevance against median latency, with logarithmic latency axes." /></p>
+<p>Jev was the fastest API reranker by median request-plus-retrieval time in both samples and had the lowest measured API token cost. Decisions was much faster than GPT generation, while the local cross-encoders were faster again.</p>
+<p>With this request design, Decisions cost more per query than GPT despite having no output-token charge. Its candidate-specific questions repeat scoring instructions and rubric structure, producing more input tokens. The application-level bill depends on the complete request, as well as the price per token.</p>
+<p>Costs are estimates from observed usage and standard list prices at the time of the run. <a href="https://developers.openai.com/api/docs/models/gpt-6-luna">GPT-6 Luna</a> was $0.10 per million input tokens and $0.50 per million output tokens; <a href="https://developers.openai.com/api/docs/guides/decisions">Decisions</a> charged $0.10 per million input tokens; <a href="https://docs.typesafe.ai/models">Jev 1.14</a> charged $0.042 per million input tokens with free output. The cost columns exclude local GPU, indexing, hosting, and engineering costs. A zero API charge for a local model does not make its infrastructure free.</p>
+<h2 tabindex='-1'>Can a model decide when to rerank?</h2>
+<p>For the routing experiment, a Decisions predicate or Jev Noul estimates whether reranking would improve nDCG@10 by at least 0.02. The gate sees the query, the first 50 candidates as short snippets, retrieval agreement, and the RRF score margin. It never sees relevance judgments or reranker outputs. One request asks separate questions about MiniLM and GPT reranking.</p>
+<p>I evaluated a fixed probability threshold of 0.5 and a calibration-only threshold. The latter minimizes the reranking rate while keeping calibration mean nDCG@10 within 0.01 of always reranking. This is a threshold-selection rule; it does not guarantee a one-point quality bound on new queries. A simple disagreement gate—one minus BM25/dense top-10 Jaccard overlap—provides a baseline with no additional API call.</p>
+<p>The calibrated API policies below use the entire measured two-question gate request as overhead. A one-question implementation could have different costs.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th style="text-align:right">Target</th>
+<th style="text-align:right">Gate</th>
+<th style="text-align:right">Skip</th>
+<th style="text-align:right">nDCG@10</th>
+<th style="text-align:right">Δ vs always [95% CI]</th>
+<th style="text-align:right">Mean ms</th>
+<th style="text-align:right">API USD / 1k</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SciFact</td>
+<td style="text-align:right">MiniLM</td>
+<td style="text-align:right">Decisions (t=0.85)</td>
+<td style="text-align:right">100.0%</td>
+<td style="text-align:right">0.7366</td>
+<td style="text-align:right">+0.0405 [-0.0042, 0.0867]</td>
+<td style="text-align:right">195</td>
+<td style="text-align:right">0.420</td>
+</tr>
+<tr>
+<td>SciFact</td>
+<td style="text-align:right">MiniLM</td>
+<td style="text-align:right">Jev (t=0.70)</td>
+<td style="text-align:right">98.3%</td>
+<td style="text-align:right">0.7366</td>
+<td style="text-align:right">+0.0405 [-0.0042, 0.0867]</td>
+<td style="text-align:right">144</td>
+<td style="text-align:right">0.204</td>
+</tr>
+<tr>
+<td>SciFact</td>
+<td style="text-align:right">GPT</td>
+<td style="text-align:right">Decisions (t=0.45)</td>
+<td style="text-align:right">15.8%</td>
+<td style="text-align:right">0.7696</td>
+<td style="text-align:right">-0.0027 [-0.0092, 0.0009]</td>
+<td style="text-align:right">2871</td>
+<td style="text-align:right">1.864</td>
+</tr>
+<tr>
+<td>SciFact</td>
+<td style="text-align:right">GPT</td>
+<td style="text-align:right">Jev (t=0.60)</td>
+<td style="text-align:right">15.0%</td>
+<td style="text-align:right">0.7691</td>
+<td style="text-align:right">-0.0032 [-0.0112, 0.0032]</td>
+<td style="text-align:right">2820</td>
+<td style="text-align:right">1.646</td>
+</tr>
+<tr>
+<td>NFCorpus</td>
+<td style="text-align:right">MiniLM</td>
+<td style="text-align:right">Decisions (t=0.80)</td>
+<td style="text-align:right">94.2%</td>
+<td style="text-align:right">0.3297</td>
+<td style="text-align:right">-0.0193 [-0.0371, -0.0028]</td>
+<td style="text-align:right">199</td>
+<td style="text-align:right">0.403</td>
+</tr>
+<tr>
+<td>NFCorpus</td>
+<td style="text-align:right">MiniLM</td>
+<td style="text-align:right">Jev (t=0.75)</td>
+<td style="text-align:right">99.2%</td>
+<td style="text-align:right">0.3314</td>
+<td style="text-align:right">-0.0175 [-0.0356, -0.0004]</td>
+<td style="text-align:right">147</td>
+<td style="text-align:right">0.195</td>
+</tr>
+<tr>
+<td>NFCorpus</td>
+<td style="text-align:right">GPT</td>
+<td style="text-align:right">Decisions (t=0.60)</td>
+<td style="text-align:right">28.3%</td>
+<td style="text-align:right">0.3504</td>
+<td style="text-align:right">-0.0004 [-0.0063, 0.0054]</td>
+<td style="text-align:right">2116</td>
+<td style="text-align:right">1.662</td>
+</tr>
+<tr>
+<td>NFCorpus</td>
+<td style="text-align:right">GPT</td>
+<td style="text-align:right">Jev (t=0.65)</td>
+<td style="text-align:right">47.5%</td>
+<td style="text-align:right">0.3446</td>
+<td style="text-align:right">-0.0062 [-0.0130, 0.0005]</td>
+<td style="text-align:right">1528</td>
+<td style="text-align:right">1.118</td>
+</tr>
+</tbody>
+</table></div>
+<p>Here, Δ nDCG is relative to always using the named reranker. Latency is the mean of retrieval + gate + reranking only when selected. These policy timings are serial replay estimates built from independently measured query outcomes, not measurements of a deployed end-to-end router.</p>
+<p><img src="assets/gating-latency.png" alt="Gate-inclusive mean latency relative to always reranking, including the hybrid-only and disagreement-gate baselines." /></p>
+<p>Before MiniLM, mean gate overhead alone ranged from 115 to 183 ms. The reranking work available to save averaged only about 61–63 ms. The calibrated gates consequently added latency even when they skipped almost everything. On SciFact, disabling MiniLM recovered hybrid's higher mean quality; hybrid-only already achieved that result with less latency. On NFCorpus, the calibrated API policies lost 0.0175–0.0193 nDCG versus always using MiniLM, exceeding the 0.01 calibration allowance on held-out queries.</p>
+<p>Before GPT, Decisions reduced estimated mean latency by 9.3% on SciFact and 23.2% on NFCorpus. Jev reduced it by 10.9% and 44.5%. Their measured quality drops ranged from 0.0004 to 0.0062 nDCG, with the uncertainty shown in the table. The Jev/NFCorpus interval still allows a loss greater than 0.01; calibration did not establish a guaranteed test-quality bound.</p>
+<p>Latency savings also differed from token savings. The Decisions gate on SciFact raised API cost from USD 1.714 to 1.864 per 1,000 queries while reducing estimated latency. The extra decision had its own bill.</p>
+<p>Benefit prediction was weak: the API gates' GPT-benefit AUROCs ranged from 0.480 to 0.595, where 0.5 is chance-level discrimination. Their measured trade-offs call for validation on the intended workload, including whether simple retrieval features achieve a similar result. Threshold choice mattered too: at the fixed 0.5 threshold, the Jev gate skipped only 1.7% of SciFact GPT calls and slightly increased mean latency.</p>
+<p>The break-even condition is straightforward:</p>
+<p><code>mean gate time &lt; mean reranking time avoided</code></p>
+<p>The right-hand side must account for which queries are skipped, because reranker durations vary. A high skip percentage alone says little about the latency saved or the relevance lost.</p>
+<p>The disagreement baseline also deserved attention. Before GPT on NFCorpus, its calibrated policy skipped 25.8%, reduced estimated mean latency by 25.3%, and lost 0.0055 nDCG. Comparing API gates against simple retrieval features was necessary to assess their added value.</p>
+<h2 tabindex='-1'>Individual queries still matter</h2>
+<p>Aggregate gains hide reversals. On SciFact query 913, about PPAR-RXR inhibition, hybrid search had nDCG@10 of 0.000 and Jev reached 1.000 by promoting the judged-relevant abstract. On query 475, about glycolysis as a primary pathway, hybrid started at 1.000 and Jev fell to 0.000. Those examples describe benchmark judgments, including the convention that unjudged alternatives receive zero; they are not explanations of the models' internal reasoning.</p>
+<p>Six of the 400 GPT reranking query evaluations ended in non-retryable <code>invalid_prompt</code> rejections: one SciFact test query, two NFCorpus test queries, and three NFCorpus calibration queries. They remain in the results with hybrid-order fallback. Incomplete structured responses were retried; rate limits and transient connection failures are recorded in the ledger. Reported latency excludes earlier failed attempts and retry delays, so it should not be read as production tail latency.</p>
+<h2 tabindex='-1'>What I would take into a search system</h2>
+<p>For these configurations, Jev offered the strongest measured relevance–API-cost combination. The small local cross-encoders offered much lower latency, with quality gains that depended on the dataset. GPT improved on hybrid in both samples, but its generation time created a larger opportunity for selective execution.</p>
+<p>I would retain hybrid as the explicit fallback, benchmark the chosen reranker on the application's queries, and add a gate only after measuring the complete route. Before a fast local cross-encoder, this particular API gate was too expensive in time. Before GPT, calibrated routing offered a measurable latency trade-off, with quality uncertainty that still needs an application-specific decision.</p>
+<p>These results cover two English biomedical retrieval tasks, one embedding model, two small cross-encoders, fixed API prompts, and one excerpting scheme. They do not establish a universal ordering of model families. Model exposure to these public benchmarks during pretraining was not audited, API generations were not repeated across seeds, and warm successful-request latency does not describe cold starts or production failure tails.</p>
+<p>The useful outcome is a measured decision boundary: choose a reranker against the application's relevance needs, then evaluate a gate against that specific reranker's cost and latency. Passage relevance and the marginal value of reranking need separate measurements.</p>
+<h2 tabindex='-1'>Reproduce the experiment</h2>
+<p>The recorded API usage estimate was USD 2.43, below the USD 5 cap, across 2,026 recorded request attempts. This includes conservative estimates for recorded network failures; tiny preflight calls and a few interrupted in-flight requests sit outside the ledger. The final integrity audit passed, including candidate identity, complete result coverage, and calibration/test separation.</p>
+<p>The <a href="../EXPERIMENT_PROTOCOL.md">experiment protocol</a> records the splits, prompts, timing definitions, fallback behavior, and limitations. <a href="../results/metrics.csv">Metrics CSV</a>, <a href="../results/gates.csv">routing CSV</a>, and <a href="../results/summary.json">complete summary</a> accompany the article. The <a href="../README.md">project guide</a> contains the commands; the software lockfile, open-model revisions, dataset checksums, frozen query IDs, and per-query numeric results are included in the source bundle. Downloaded corpora, model weights, and credentials are excluded.</p>
+</article></main><footer>Methods, measurements, and reproducible results · October 2026</footer></div></body></html>
